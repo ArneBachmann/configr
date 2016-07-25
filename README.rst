@@ -33,6 +33,10 @@ Using pip::
 
     pip install configr
 
+Using setup.py (usually elevated rights are needed, e.g. via ``sudo`` (Linux) or ``runas`` (Windows))::
+
+    python setup.py install
+
 
 API reference
 -------------
