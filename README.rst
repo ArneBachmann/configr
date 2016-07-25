@@ -6,11 +6,13 @@ Synopsis
 --------
 
 This small utility library helps managing global or per-user configuration data for your apps.
-Installation through pip will install the appdirs package, but the code may be used without any external dependencies as well. ::
+Installation through pip will install the appdirs package, but the code may be used without any external dependencies as well.
 
 
 Code Example
 ------------
+
+Simple use::
 
     import configr
     cfg = configr.Configr("myapp")
@@ -27,13 +29,15 @@ This library helps solving a common problem found in many apps: simple configura
 Installation
 ------------
 
+Using pip::
+
     pip install configr
 
 
 API reference
 -------------
 
-The Configr object has the following functions:
+The Configr object has the following functions::
 
     __init__(_, name, data = {}, defaults = {})
     loadSettings(_, defaults = {}, location = None, ignores = [])
