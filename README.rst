@@ -45,7 +45,7 @@ The Configr object has the following functions::
 
     __init__(_, name, data = {}, defaults = {})
     loadSettings(_, defaults = {}, location = None, ignores = [])
-    SaveSetings(_, keys = None, location = None)
+    SaveSettings(_, keys = None, location = None)
 
 Additionally the object supports dictionary and attribute style access (the latter of couse only for keys that start with an alphabetic character or underscore).
 
