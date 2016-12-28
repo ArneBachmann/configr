@@ -2,6 +2,12 @@ Configr
 =======
 
 
+|BuildStatus|_
+
+.. |BuildStatus| image:: https://travis-ci.org/ArneBachmann/configr.svg?branch=master
+.. _BuildStatus: https://travis-ci.org/ArneBachmann/configr
+
+
 Synopsis
 --------
 
@@ -68,7 +74,7 @@ License
 Licensed under the terms of MIT license.
 
     MIT License
-  
+
     Copyright (c) 2016 Arne Bachmann
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
