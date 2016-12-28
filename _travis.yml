@@ -1,0 +1,9 @@
+language: python
+python:
+  - "2.7"
+  - "3.0"
+  - "3.5"
+  - "pypy"  # PyPy2 2.5.0
+  - "pypy3" # Pypy3 2.4.0
+install: "pip install coverage"
+script: python setup.py build && cd tests && coverage run test.py
