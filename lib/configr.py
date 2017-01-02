@@ -3,7 +3,7 @@ A practical configuration library for your Python apps.
 https://pypi.python.org/pypi/configr/
 '''
 
-from version import __version_info__, __version__
+from version import __version_info__, __version__  # used by setup.py
 
 # Standard modules
 import json
@@ -39,23 +39,23 @@ class Configr(object):
     '''
     _.__name = name
     _.__defaults = defaults
-    _.__map = { k: v for k, v in data.items()} # copy
+    _.__map = { k: v for k, v in data.items()}  # copy
     try:
-      import appdirs # optional dependency
-      home = appdirs.user_data_dir(name, name) # app/author
+      import appdirs  # optional dependency
+      home = appdirs.user_data_dir(name, name)  # app/author
     except:
-      try: # get user home regardless of currently set environment variables
+      try:  # get user home regardless of currently set environment variables
         from win32com.shell import shell, shellcon
         home = shell.SHGetFolderPath(0, shellcon.CSIDL_PROFILE, None, 0)
       except:
-        try: # unix-like native solution ignoring environment variables
+        try:  # unix-like native solution ignoring environment variables
           from pwd import getpwuid
           home = getpwuid(os.getuid()).pw_dir
-        except: # now try standard approaches
-          home = os.getenv("USERPROFILE") # for windows only
+        except:  # now try standard approaches
+          home = os.getenv("USERPROFILE")  # for windows only
           if home is None:
-            home = os.expanduser("~") # recommended cross-platform solution, but could refer to a mapped network drive on Windows
-    assert home # if assertion fails, we cannot determine user's home directory in this environment
+            home = os.expanduser("~")  # recommended cross-platform solution, but could refer to a mapped network drive on Windows
+    assert home  # if assertion fails, we cannot determine user's home directory in this environment
     _.__home = home
 
   def __getitem__(_, key):
@@ -69,14 +69,14 @@ class Configr(object):
 
   def __getattribute__(_, key):
     ''' Query a configuration value via attribute access. '''
-    if key.startswith("_Configr"): key = key[len("_Configr"):] # strange hack necessary
+    if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary
     if key.startswith('__') or key in Configr.exports: return object.__getattribute__(_, key)
     try: return _.__map[key]
     except: return _.__defaults[key]
 
   def __setattr__(_, key, value):
     ''' Define a configuration value via attribute access. '''
-    if key.startswith("_Configr"): key = key[len("_Configr"):] # strange hack necessary
+    if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary
     if key.startswith('__'): object.__setattr__(_, key, value)
     else: _.__map[key] = value
 
@@ -103,7 +103,7 @@ class Configr(object):
     '''
     config = os.path.join(_.__home if location is None else location, _.__name)
     try: os.makedirs(_.__home)
-    except: pass # already exists
+    except: pass  # already exists
     try:
       with open(config, "w") as fd:
         to_write = [K for K in _.keys() if not K.startswith("_") and K not in ["__savedTo", "__loadedFrom"]] if keys is None else keys

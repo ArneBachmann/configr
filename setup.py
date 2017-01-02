@@ -5,15 +5,15 @@ from setuptools import setup
 
 # Upload to PyPI by running setup.py clean build_py sdist bdist upload with a correctly set up ~/.pypirc (need HOME variable set correctly on Windows)
 
-with open("lib" + os.sep + "version.py", "w") as fd: # create versions string at build time
-  fd.write(time.strftime("__version_info__ = (%Y, %m%d, %H%M)\n__version__ = '.'.join(map(str, __version_info__))\n"))
+with open("lib" + os.sep + "version.py", "w") as fd:  # create version string at build time
+  fd.write(time.strftime("__version_info__ = tuple(int(_) for _ in ('%Y', '%m%d', '%H%M'))\n__version__ = '.'.join(map(str, __version_info__))\n"))
 
 _top_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(_top_dir, "lib")) # temporary sys.path addition
+sys.path.insert(0, os.path.join(_top_dir, "lib"))  # temporary sys.path addition
 try: import configr
-finally: del sys.path[0] # clean sys.path after import
+finally: del sys.path[0]  # clean sys.path after import
 README = open(os.path.join(_top_dir, 'README.rst')).read()
-#CHANGES = open(os.path.join(_top_dir, 'CHANGES.rst')).read()
+# CHANGES = open(os.path.join(_top_dir, 'CHANGES.rst')).read()
 
 setup(
   name = 'configr',
@@ -21,7 +21,7 @@ setup(
   install_requires = ["appdirs >= 1.4.0"],
   test_suite = "tests",
   description = configr.__doc__,
-  long_description = README,# + '\n' + CHANGES,
+  long_description = README,  # + '\n' + CHANGES,
   classifiers = [c.strip() for c in """
         Development Status :: 4 - Beta
         Intended Audience :: Developers
