@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+import unittest
 from setuptools import setup
 
 # Upload to PyPI by running setup.py clean build_py sdist bdist upload with a correctly set up ~/.pypirc (need HOME variable set correctly on Windows)
@@ -9,11 +10,16 @@ with open("lib" + os.sep + "version.py", "w") as fd:  # create version string at
   fd.write(time.strftime("__version_info__ = tuple(int(_) for _ in ('%Y', '%m%d', '%H%M'))\n__version__ = '.'.join(map(str, __version_info__))\n"))
 
 _top_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(_top_dir, "tests"))  # temporary sys.path addition
 sys.path.insert(0, os.path.join(_top_dir, "lib"))  # temporary sys.path addition
-try: import configr
-finally: del sys.path[0]  # clean sys.path after import
+try: import configr, test  # needed for version strings
+except Exception as E: print(E)
+finally: del sys.path[:2]  # clean sys.path after import
 README = open(os.path.join(_top_dir, 'README.rst')).read()
 # CHANGES = open(os.path.join(_top_dir, 'CHANGES.rst')).read()
+
+assert len(unittest.defaultTestLoader.loadTestsFromModule(test).run(unittest.TestResult()).errors) == 0
+assert len(unittest.defaultTestLoader.loadTestsFromModule(test).run(unittest.TestResult()).failures) == 0
 
 setup(
   name = 'configr',

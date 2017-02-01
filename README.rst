@@ -7,12 +7,15 @@ Configr
 .. |BuildStatus| image:: https://travis-ci.org/ArneBachmann/configr.svg?branch=master
 .. _BuildStatus: https://travis-ci.org/ArneBachmann/configr
 
+.. image:: https://badge.fury.io/py/configr.svg
+  :target: https://badge.fury.io/py/configr
+
 
 Synopsis
 --------
 
-This small utility library helps managing global or per-user configuration data for your apps.
-Installation through pip will install the appdirs package, but the code may be used without any external dependencies as well.
+This small utility library helps managing global or per-user configuration for your Python apps.
+Installation through ``pip`` will install the ``appdirs`` package as a dependency, but the code may be used without any external dependencies as well.
 
 
 Code Example
@@ -20,16 +23,17 @@ Code Example
 
 Simple use::
 
-    import configr
-    cfg = configr.Configr("myapp")
-    cfg.a = "Value of A"
-    print cfg["a"]
+    >>> import configr
+    >>> cfg = configr.Configr("myapp")
+    >>> cfg.a = "Value of A"
+    >>> print cfg["a"]
+    Value of A
 
 
 Motivation
 ----------
 
-This library helps solving a common problem found in many apps: simple configuration (file) handling.
+This library helps solving a common problem found in many apps: simplified configuration/settings/preset handling.
 
 
 Installation
@@ -49,11 +53,23 @@ API reference
 
 The Configr object has the following functions::
 
-    __init__(_, name, data = {}, defaults = {})
-    loadSettings(_, defaults = {}, location = None, ignores = [])
-    SaveSettings(_, keys = None, location = None)
+    __init__(_, name, data = {}, defaults = {})  # Constructor
+    loadSettings(_, defaults = {}, location = None, ignores = [])  # load configuration
+    SaveSettings(_, keys = None, location = None)  # persist configuration
 
 Additionally the object supports dictionary and attribute style access (the latter of couse only for keys that start with an alphabetic character or underscore).
+
+
+Building, packaging and distribution
+------------------------------------
+
+Run ``python setup.py build install`` locally, or ``python setup.py build sdist upload`` to upload the package to PyPI/Warehouse.
+
+
+Todo
+----
+
+Further improvements would include a backup-and-save approach.
 
 
 Tests
@@ -65,7 +81,7 @@ The tool provides unit tests through the doctest module and integration tests th
 Contributors
 ------------
 
-This library is currently developed by Arne Bachmann.
+This library is currently developed and maintained by Arne Bachmann.
 
 
 License
@@ -75,7 +91,7 @@ Licensed under the terms of MIT license.
 
     MIT License
 
-    Copyright (c) 2016 Arne Bachmann
+    Copyright (c) 2016-2017 Arne Bachmann
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
