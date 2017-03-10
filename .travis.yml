@@ -1,8 +1,25 @@
 language: python
-python:
-  - "2.7"
-  - "3.5"
-  - "pypy"  # PyPy2 2.5.0
-  - "pypy3" # Pypy3 2.4.0
-install: "pip install coverage"
-script: python setup.py build && cd tests && coverage run test.py
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      python: 2.7
+    - os: linux
+      dist: trusty
+      python: 3.5
+    - os: linux
+      dist: precise
+      python: 2.7
+    - os: linux
+      dist: precise
+      python: 3.5
+#    - os: linux
+#      dist: precise
+#      python: pypy
+#    - os: linux
+#      dist: precise
+#      python: pypy3
+install: "pip install coverage python-coveralls"  # or "coveralls" instead (alternative package)
+script: python setup.py build && cd tests && coverage run tests.py && coverage html && coverage annotate tests.py
+after_success:
+  - coveralls
