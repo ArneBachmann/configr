@@ -10,6 +10,10 @@ Configr
 .. image:: https://badge.fury.io/py/configr.svg
   :target: https://badge.fury.io/py/configr
 
+.. image:: https://coveralls.io/repos/github/ArneBachmann/configr/badge.svg?branch=master
+  :target: https://coveralls.io/github/ArneBachmann/configr?branch=master
+
+
 
 Synopsis
 --------
