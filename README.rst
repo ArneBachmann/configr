@@ -2,10 +2,8 @@ Configr
 =======
 
 
-|BuildStatus|_
-
-.. |BuildStatus| image:: https://travis-ci.org/ArneBachmann/configr.svg?branch=master
-.. _BuildStatus: https://travis-ci.org/ArneBachmann/configr
+.. image:: https://travis-ci.org/ArneBachmann/configr.svg?branch=master
+  :target: https://travis-ci.org/ArneBachmann/configr
 
 .. image:: https://badge.fury.io/py/configr.svg
   :target: https://badge.fury.io/py/configr

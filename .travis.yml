@@ -16,9 +16,9 @@ matrix:
     - os: linux
       dist: precise
       python: pypy
-    - os: linux
-      dist: precise
-      python: pypy3
+#    - os: linux
+#      dist: precise
+#      python: pypy3
 install: "pip install coverage python-coveralls"  # or "coveralls" instead (alternative package)
 script: python setup.py build && cd tests && coverage run test.py && coverage html && coverage annotate test.py
 after_success:
