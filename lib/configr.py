@@ -2,6 +2,9 @@
 A practical configuration library for your Python apps.
 - https://pypi.python.org/pypi/configr/
 - https://github.com/ArneBachmann/configr
+
+Optional external dependencies:  appdirs
+Optional standard modules:       pwd, win32com
 '''
 
 from version import __version_info__, __version__  # used by setup.py
@@ -11,9 +14,8 @@ import hashlib
 import json
 import os
 
-# Optional external dependencies:  appdirs
-# Optional standard modules:       pwd, win32com
 
+bites = lambda s: s.encode('utf-8')  # name derived from "bytes" which would have been an alternative implementation
 
 class Configr(object):
   ''' Main configuration object. Property access directly on attributes or dict-style access. '''
@@ -100,8 +102,8 @@ class Configr(object):
     '''
     config = os.path.join(_.__home if location is None else location, "%s-%s-%s" % (
         _.__name,
-        hashlib.sha1(os.path.dirname(os.path.abspath(os.__file__))).hexdigest()[:4],
-        hashlib.sha1(os.path.dirname(os.path.abspath(clientCodeLocation))).hexdigest()[:4]))  # always use current (installed or local) library's location and caller's location to separate configs
+        hashlib.sha1(bites(os.path.dirname(os.path.abspath(os.__file__)))).hexdigest()[:4],
+        hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation)))).hexdigest()[:4]))  # always use current (installed or local) library's location and caller's location to separate configs
     try:
       with open(config, "r") as fd:
         tmp = json.loads(fd.read())
@@ -120,8 +122,8 @@ class Configr(object):
     '''
     config = os.path.join(_.__home if location is None else location, "%s-%s-%s" % (
         _.__name,
-        hashlib.sha1(os.path.dirname(os.path.abspath(os.__file__))).hexdigest()[:4],
-        hashlib.sha1(os.path.dirname(os.path.abspath(clientCodeLocation))).hexdigest()[:4]))  # always use current (installed or local) library's location and caller's location to separate configs
+        hashlib.sha1(bites(os.path.dirname(os.path.abspath(os.__file__)))).hexdigest()[:4],
+        hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation)))).hexdigest()[:4]))  # always use current (installed or local) library's location and caller's location to separate configs
     try: os.makedirs(_.__home)
     except: pass  # already exists
     try:
