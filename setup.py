@@ -31,10 +31,12 @@ try:
 except: print("Warning: test suite failed")
 
 # Clean old binaries
-for file in os.listdir("dist"):
-  try:
-    if file.endswith(".tar.gz"): os.unlink(os.path.join("dist", file))
-  except: print("Cannot remove " + file)
+try:
+  for file in os.listdir("dist"):
+    try:
+      if file.endswith(".tar.gz"): os.unlink(os.path.join("dist", file))
+    except: print("Cannot remove " + file)
+except: pass
 
 print("Building configr version " + configr.__version__)
 setup(
