@@ -20,7 +20,7 @@ __version_info__ = (%d, %d, %d)
 __version__ = '.'.join(map(str, __version_info__))
 """ % (md.tm_year, (10 + md.tm_mon) * 100 + md.tm_mday, (10 + md.tm_hour) * 100 + md.tm_min))
 
-from configr import configr, test, __version__  # needed for version strings
+from configr import configr, test  # needed for version strings
 README = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.rst')).read()
 # CHANGES = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CHANGES.rst')).read()
 
@@ -36,10 +36,10 @@ for file in os.listdir("dist"):
     if file.endswith(".tar.gz"): os.unlink(os.path.join("dist", file))
   except: print("Cannot remove " + file)
 
-print("Building configr version " + __version__)
+print("Building configr version " + configr.__version__)
 setup(
   name = 'configr',
-  version = __version__,
+  version = configr.__version__,
   install_requires = ["appdirs >= 1.4.0"],
   test_suite = "tests",
   description = configr.__doc__,
