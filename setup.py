@@ -14,22 +14,18 @@ if os.path.exists(".git"):
 else:
   micro = "svn"
 md = time.localtime()
-with open("lib" + os.sep + "version.py", "w") as fd:  # create version string at build time
+with open("configr" + os.sep + "version.py", "w") as fd:  # create version string at build time
   fd.write("__version_info__ = (%d, %d, %d)\n__version__ = '.'.join(map(str, __version_info__))\n" % (md.tm_year, (10 + md.tm_mon) * 100 + md.tm_mday, (10 + md.tm_hour) * 100 + md.tm_min))
 
 _top_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(_top_dir, "tests"))  # temporary sys.path addition
-sys.path.insert(0, os.path.join(_top_dir, "lib"))  # temporary sys.path addition
-try: import configr, test  # needed for version strings
+try: import configr, configr.test  # needed for version strings
 except Exception as E: print(E)
 finally: del sys.path[:2]  # clean sys.path after import
 README = open(os.path.join(_top_dir, 'README.rst')).read()
 # CHANGES = open(os.path.join(_top_dir, 'CHANGES.rst')).read()
 
 try:
-  os.chdir("tests")
-  testrun = unittest.defaultTestLoader.loadTestsFromModule(test).run(unittest.TestResult())
-  os.chdir("..")
+  testrun = unittest.defaultTestLoader.loadTestsFromModule(configr.test).run(unittest.TestResult())
   assert len(testrun.errors) == 0
   assert len(testrun.failures) == 0
 except: pass  # pip install doesn't need it
@@ -59,9 +55,9 @@ setup(
   maintainer_email = 'ArneBachmann@users.noreply.github.com',
   url = 'http://github.com/ArneBachmann/configr',
   license = 'MIT',
-  py_modules = ["configr"],
-  package_dir = {"": "lib"},
-  package_data = {"": ["*.py"]},
+  packages = ["configr", "test"],
+  package_dir = {"configr": "configr", "test": "configr/test", "": ""},
+  package_data = {"": ["LICENSE", "README.rst"]},
   include_package_data = True,
   zip_safe = False
 )
