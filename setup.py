@@ -14,25 +14,32 @@ if os.path.exists(".git"):
 else:
   micro = "svn"
 md = time.localtime()
-with open("configr" + os.sep + "version.py", "w") as fd:  # create version string at build time
-  fd.write("__version_info__ = (%d, %d, %d)\n__version__ = '.'.join(map(str, __version_info__))\n" % (md.tm_year, (10 + md.tm_mon) * 100 + md.tm_mday, (10 + md.tm_hour) * 100 + md.tm_min))
+with open(os.path.join("configr", "version.py"), "w") as fd:  # create version string at build time
+  fd.write("""\
+__version_info__ = (%d, %d, %d)
+__version__ = '.'.join(map(str, __version_info__))
+""" % (md.tm_year, (10 + md.tm_mon) * 100 + md.tm_mday, (10 + md.tm_hour) * 100 + md.tm_min))
 
-_top_dir = os.path.dirname(os.path.abspath(__file__))
-try: from configr import configr, test  # needed for version strings
-except Exception as E: print(E)
-finally: del sys.path[:2]  # clean sys.path after import
-README = open(os.path.join(_top_dir, 'README.rst')).read()
-# CHANGES = open(os.path.join(_top_dir, 'CHANGES.rst')).read()
+from configr import configr, test, __version__  # needed for version strings
+README = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.rst')).read()
+# CHANGES = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CHANGES.rst')).read()
 
 try:
   testrun = unittest.defaultTestLoader.loadTestsFromModule(configr.test).run(unittest.TestResult())
   assert len(testrun.errors) == 0
   assert len(testrun.failures) == 0
-except: pass  # pip install doesn't need it
+except: print("Warning: test suite failed")
 
+# Clean old binaries
+for file in os.listdir("dist"):
+  try:
+    if file.endswith(".tar.gz"): os.unlink(os.path.join("dist", file))
+  except: print("Cannot remove " + file)
+
+print("Building configr version " + __version__)
 setup(
   name = 'configr',
-  version = configr.__version__,
+  version = __version__,
   install_requires = ["appdirs >= 1.4.0"],
   test_suite = "tests",
   description = configr.__doc__,

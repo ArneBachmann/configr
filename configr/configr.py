@@ -9,7 +9,8 @@ Optional external dependencies:  appdirs (automatically pulled by pip)
 Optional standard modules:       pwd, win32com
 '''
 
-from version import __version_info__, __version__  # created and used by setup.py
+try: from configr.version import __version_info__, __version__  # created and used by setup.py
+except: from version import __version_info__, __version__  # Python 2 logic
 
 # Standard modules
 import hashlib
