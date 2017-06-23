@@ -3,13 +3,13 @@ Configr
 
 
 .. image:: https://travis-ci.org/ArneBachmann/configr.svg?branch=master
-:target: https://travis-ci.org/ArneBachmann/configr
+   :target: https://travis-ci.org/ArneBachmann/configr
 
 .. image:: https://badge.fury.io/py/configr.svg
-:target: https://badge.fury.io/py/configr
+   :target: https://badge.fury.io/py/configr
 
 .. image:: https://coveralls.io/repos/github/ArneBachmann/configr/badge.svg?branch=master
-:target: https://coveralls.io/github/ArneBachmann/configr?branch=master
+   :target: https://coveralls.io/github/ArneBachmann/configr?branch=master
 
 
 
