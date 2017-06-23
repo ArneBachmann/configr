@@ -20,6 +20,6 @@ matrix:
 #      dist: precise
 #      python: pypy3
 install: "pip install coverage python-coveralls"  # or "coveralls" instead (alternative package)
-script: python setup.py build && cd tests && coverage run test.py && coverage html && coverage annotate test.py
+script: python setup.py build && cd configr && coverage run test.py && coverage html && coverage annotate test.py
 after_success:
   - coveralls
