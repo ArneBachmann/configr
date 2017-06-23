@@ -3,24 +3,27 @@ A practical configuration library for your Python apps.
 - https://pypi.python.org/pypi/configr/
 - https://github.com/ArneBachmann/configr
 
-Optional external dependencies:  appdirs
+Optional external dependencies:  appdirs (automatically pulled by pip)
 Optional standard modules:       pwd, win32com
 '''
 
-from version import __version_info__, __version__  # used by setup.py
+from version import __version_info__, __version__  # created and used by setup.py
 
 # Standard modules
 import hashlib
 import json
 import os
+import shutil
 
 
-bites = lambda s: s.encode('utf-8')  # name derived from "bytes" which would have been an alternative implementation
+def bites(s): return s.encode('utf-8')  # name derived from "bytes" which would have been an alternative implementation
+
 
 class Configr(object):
   ''' Main configuration object. Property access directly on attributes or dict-style access. '''
 
-  exports = ["loadSettings", "saveSettings"]  # list of functions to accept calling
+  exports = {"loadSettings", "saveSettings"}  # functions to accept calling
+  internals = {"__name", "__map", "__defaults", "__savedTo", "__loadedFrom"}  # app name, dict, fallbacks, hints
 
   def __init__(_, name, data = {}, defaults = {}):
     ''' Create config object for interaction with settings.
@@ -65,22 +68,21 @@ class Configr(object):
 
   def __getitem__(_, key):
     ''' Query a configuration value via dictionary access. '''
-    key = str(key)
-    if key.startswith('__'): return _.__getattribute__(key)
+    key = str(key)  # always convert keys to strings
+    if key in Configr.internals: return getattr(_, key)  # e.g. __map attribute
     try: return _.__map[key]
     except: return _.__defaults[key]
 
   def __setitem__(_, key, value):
     ''' Define a configuration value via dictionary access. '''
-    _.__map[str(key)] = value
+    _.__map[str(key)] = value  # always convert keys to strings
 
   def __getattribute__(_, key):
     ''' Query a configuration value via attribute access. '''
     key = str(key)
-    if key == '__name': return object.__getattribute__(_, "__name")
-    if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary
+    if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary to remove object name key prefix
     if key.startswith("_Test_AppDir"): key = key[len("_Test_AppDir"):]  # for unit testing
-    if key.startswith('__') or key in Configr.exports: return object.__getattribute__(_, key)
+    if key in Configr.internals or key in Configr.exports: return object.__getattribute__(_, key)
     try: return _.__map[key]
     except: return _.__defaults[key]
 
@@ -89,7 +91,7 @@ class Configr(object):
     key = str(key)
     if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary
     if key.startswith("_Test_AppDir"): key = key[len("_Test_AppDir"):]  # for unit testing
-    if key.startswith('__'): object.__setattr__(_, key, value)
+    if key in Configr.internals: object.__setattr__(_, key, value)
     else: _.__map[key] = value
 
   def loadSettings(_, data = {}, location = None, ignores = [], clientCodeLocation = 'undefined'):
@@ -98,7 +100,7 @@ class Configr(object):
         location: load from a fixed path, e.g. system-wide global settings like app dir
         clientCodeLocation: should be a call to os.__file__ from the caller's script to separate configuration for different tools
         ignores: list of keys to ignore and not load from file
-        returns: None
+        returns: 2-tuple(config-file or None, None or Exception)
     '''
     config = os.path.join(_.__home if location is None else location, "%s-%s-%s" % (
         _.__name,
@@ -112,13 +114,14 @@ class Configr(object):
       _.__loadedFrom = (config, None)  # memorize file location loaded from
     except Exception as E:
       _.__loadedFrom = (None, E)  # callers can detect errors by checking this flag
+    return _.__loadedFrom
 
   def saveSettings(_, keys = None, location = None, clientCodeLocation = 'undefined'):
     ''' Save settings stored onself object to file system.
         keys: if defined, a list of keys to write
         location: save to a fixed path, e.g. system-wide global settings like app dir
         clientCodeLocation: should be a call to os.__file__ from the caller's script to separate configuration for different tools
-        returns: None
+        returns: 2-tuple(config-file or None, None or Exception)
     '''
     config = os.path.join(_.__home if location is None else location, "%s-%s-%s" % (
         _.__name,
@@ -126,16 +129,20 @@ class Configr(object):
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation)))).hexdigest()[:4]))  # always use current (installed or local) library's location and caller's location to separate configs
     try: os.makedirs(_.__home)
     except: pass  # already exists
+    try: shutil.copy2(config, config + ".bak")
+    except: pass
     try:
       with open(config, "w") as fd:
-        to_write = [K for K in _.__map.keys() if not K.startswith("_") and K not in ["__savedTo", "__loadedFrom"]] if keys is None else keys
-        tmp = {k: _[k] for k in to_write}
+        toWrite = [K for K in _.__map.keys() if K not in internals] if keys is None else keys
+        tmp = {k: _[k] for k in toWrite}
         fd.write(json.dumps(tmp))
       _.__savedTo = (config, None)
     except Exception as E:
       _.__savedTo = (None, E)
+    return _.__savedTo
 
 
 if __name__ == '__main__':
+  ''' Running this library module as a main file will invoke the test suite instead to avoid side-effects. '''
   import doctest
   doctest.testmod()

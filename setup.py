@@ -12,7 +12,7 @@ if os.path.exists(".git"):
   so, se = p.communicate()
   micro = so.strip() if sys.version_info.major < 3 else so.strip().decode('ascii')
 else:
-  micro = "dev"
+  micro = "svn"
 md = time.localtime()
 with open("lib" + os.sep + "version.py", "w") as fd:  # create version string at build time
   fd.write("__version_info__ = (%d, %d, %d)\n__version__ = '.'.join(map(str, __version_info__))\n" % (md.tm_year, (10 + md.tm_mon) * 100 + md.tm_mday, (10 + md.tm_hour) * 100 + md.tm_min))
@@ -26,8 +26,11 @@ finally: del sys.path[:2]  # clean sys.path after import
 README = open(os.path.join(_top_dir, 'README.rst')).read()
 # CHANGES = open(os.path.join(_top_dir, 'CHANGES.rst')).read()
 
-assert len(unittest.defaultTestLoader.loadTestsFromModule(test).run(unittest.TestResult()).errors) == 0
-assert len(unittest.defaultTestLoader.loadTestsFromModule(test).run(unittest.TestResult()).failures) == 0
+os.chdir("tests")
+testrun = unittest.defaultTestLoader.loadTestsFromModule(test).run(unittest.TestResult())
+os.chdir("..")
+assert len(testrun.errors) == 0
+assert len(testrun.failures) == 0
 
 setup(
   name = 'configr',
@@ -37,14 +40,14 @@ setup(
   description = configr.__doc__,
   long_description = README,  # + '\n' + CHANGES,
   classifiers = [c.strip() for c in """
-        Development Status :: 4 - Beta
+        Development Status :: 5 - Production/Stable
         Intended Audience :: Developers
         License :: OSI Approved :: MIT License
         Operating System :: OS Independent
         Programming Language :: Python :: 2
         Programming Language :: Python :: 2.7
         Programming Language :: Python :: 3
-        Programming Language :: Python :: 3.5
+        Programming Language :: Python :: 3.6
         Topic :: Software Development :: Libraries :: Python Modules
         """.split('\n') if c.strip()],
   keywords = 'application configuration management settings presets',

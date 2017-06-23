@@ -55,11 +55,12 @@ API reference
 
 The Configr object has the following functions::
 
-    __init__(_, name, data = {}, defaults = {})  # Constructor
-    loadSettings(_, defaults = {}, location = None, ignores = [])  # load configuration
-    SaveSettings(_, keys = None, location = None)  # persist configuration
+    __init__(_, name, data = {}, defaults = {})  # Constructor. "data" initializes the configuration, while "defaults" contains fallback values not explicity set on the configuration data.
+    saveSettings(_, keys = None, location = None)  # Persist the configuration. "keys" limits the entries written. "location" is a file system path
+    loadSettings(_, data = {}, location = None, ignores = [])  # load configuration. "data" is used if its key is not found in the file. "ignores" are keys to not load. location" is a file system path
 
-Additionally the object supports dictionary and attribute style access (the latter of couse only for keys that start with an alphabetic character or underscore).
+Configr object supports dictionary and attribute style access to get or set entries.
+Both "loadSettings" and "saveSettings" support an additional "clientCodeLocation" parameter to allow passing a path to further separated several installation locations of the same app on a single file system. This allows to separate settings for each installation, if they are placed in different directories.
 
 
 Building, packaging and distribution
@@ -71,7 +72,7 @@ Run ``python setup.py build install`` locally, or ``python setup.py build sdist 
 Todo
 ----
 
-Further improvements would include a backup-and-save approach.
+Suggest anything in the issue tracker. This library is supposed to be lightweight and gets the job done so far.
 
 
 Tests
