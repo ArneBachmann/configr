@@ -1,7 +1,9 @@
 '''
 A practical configuration library for your Python apps.
-- https://pypi.python.org/pypi/configr/
-- https://github.com/ArneBachmann/configr
+
+https://pypi.python.org/pypi/configr/
+
+https://github.com/ArneBachmann/configr
 
 Optional external dependencies:  appdirs (automatically pulled by pip)
 Optional standard modules:       pwd, win32com

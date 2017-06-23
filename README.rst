@@ -3,13 +3,13 @@ Configr
 
 
 .. image:: https://travis-ci.org/ArneBachmann/configr.svg?branch=master
-  :target: https://travis-ci.org/ArneBachmann/configr
+:target: https://travis-ci.org/ArneBachmann/configr
 
 .. image:: https://badge.fury.io/py/configr.svg
-  :target: https://badge.fury.io/py/configr
+:target: https://badge.fury.io/py/configr
 
 .. image:: https://coveralls.io/repos/github/ArneBachmann/configr/badge.svg?branch=master
-  :target: https://coveralls.io/github/ArneBachmann/configr?branch=master
+:target: https://coveralls.io/github/ArneBachmann/configr?branch=master
 
 
 
@@ -66,7 +66,8 @@ Both "loadSettings" and "saveSettings" support an additional "clientCodeLocation
 Building, packaging and distribution
 ------------------------------------
 
-Run ``python setup.py build install`` locally, or ``python setup.py build sdist upload`` to upload the package to PyPI/Warehouse.
+Run ``python setup.py build install`` locally, or ``python setup.py build sdist upload -r https://www.python.org/pypi`` to upload the package to PyPI/Warehouse.
+New: ``twine upload dist/*.tar.gz`` (choose youngest version)
 
 
 Todo
