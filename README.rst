@@ -66,14 +66,15 @@ Both "loadSettings" and "saveSettings" support an additional "clientCodeLocation
 Building, packaging and distribution
 ------------------------------------
 
-Run ``python setup.py build install`` locally, or ``python setup.py build sdist upload -r https://www.python.org/pypi`` to upload the package to PyPI/Warehouse.
-New: ``twine upload dist/*.tar.gz`` (choose youngest version)
+Run ``python setup.py build sdist`` to package the module.
+Run ``twine upload dist/*.tar.gz`` to upload the module to PyPI.
 
 
 Todo
 ----
 
-Suggest anything in the issue tracker. This library is supposed to be lightweight and gets the job done so far.
+This library is supposed to be lightweight and gets the job done so far.
+If you have ideas, please put them into the projec's issue tracker on Github.
 
 
 Tests
