@@ -18,7 +18,7 @@ with open("configr" + os.sep + "version.py", "w") as fd:  # create version strin
   fd.write("__version_info__ = (%d, %d, %d)\n__version__ = '.'.join(map(str, __version_info__))\n" % (md.tm_year, (10 + md.tm_mon) * 100 + md.tm_mday, (10 + md.tm_hour) * 100 + md.tm_min))
 
 _top_dir = os.path.dirname(os.path.abspath(__file__))
-try: import configr, configr.test  # needed for version strings
+try: from configr import configr, test  # needed for version strings
 except Exception as E: print(E)
 finally: del sys.path[:2]  # clean sys.path after import
 README = open(os.path.join(_top_dir, 'README.rst')).read()
@@ -55,8 +55,8 @@ setup(
   maintainer_email = 'ArneBachmann@users.noreply.github.com',
   url = 'http://github.com/ArneBachmann/configr',
   license = 'MIT',
-  packages = ["configr", "test"],
-  package_dir = {"configr": "configr", "test": "configr/test", "": ""},
+  packages = ["configr"],
+  package_dir = {"configr": "configr"},
   package_data = {"": ["LICENSE", "README.rst"]},
   include_package_data = True,
   zip_safe = False
