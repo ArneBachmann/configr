@@ -62,6 +62,8 @@ The Configr object has the following functions::
 Configr object supports dictionary and attribute style access to get or set entries.
 Both "loadSettings" and "saveSettings" support an additional "clientCodeLocation" parameter to allow passing a path to further separated several installation locations of the same app on a single file system. This allows to separate settings for each installation, if they are placed in different directories.
 
+Both functions also return a named 2-tuple containing last loaded/saved file location in the first (.path), or an exception in the second (.error) position.
+
 
 Building, packaging and distribution
 ------------------------------------
