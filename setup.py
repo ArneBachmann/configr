@@ -44,7 +44,7 @@ setup(
   version = configr.__version__,
   install_requires = ["appdirs >= 1.4.0"],
   test_suite = "tests",
-  description = configr.__doc__.replace("\r", "").replace("\n", "  "),
+  description = "configr: A practical configuration library for your Python apps.",
   long_description = README,  # + '\n' + CHANGES,
   classifiers = [c.strip() for c in """
         Development Status :: 5 - Production/Stable
