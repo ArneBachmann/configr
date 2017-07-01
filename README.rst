@@ -11,6 +11,8 @@ Configr
 .. image:: https://coveralls.io/repos/github/ArneBachmann/configr/badge.svg?branch=master
    :target: https://coveralls.io/github/ArneBachmann/configr?branch=master
 
+.. image:: https://img.shields.io/pypi/pyversions/Django.svg
+
 
 
 Synopsis
