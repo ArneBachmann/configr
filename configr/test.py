@@ -12,6 +12,7 @@ sys.path.pop(0)
 
 
 class Test_AppDir(unittest.TestCase):
+  ''' Test suite. '''
 
   def tests_metadata(_):
     _.assertTrue(hasattr(configr, "__version__"))

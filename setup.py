@@ -56,7 +56,7 @@ setup(
         Programming Language :: Python :: 3
         Programming Language :: Python :: 3.6
         Topic :: Software Development :: Libraries :: Python Modules
-        """.split('\n') if c.strip()],
+        """.split('\n') if c.strip()],  # https://pypi.python.org/pypi?:action=list_classifiers
   keywords = 'application configuration management settings presets',
   author = 'Arne Bachmann',
   author_email = 'ArneBachmann@users.noreply.github.com',
