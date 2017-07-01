@@ -16,14 +16,20 @@ except: from version import __version_info__, __version__  # Python 2 logic
 import collections
 import hashlib
 import json
+import logging
 import os
 import shutil
 
 
-EXTENSION = "_cfg"
+_log = logging.getLogger(__name__); debug, info, warn, error = _log.debug, _log.info, _log.warn, _log.error
+
+EXTENSION = ".cfg"
+BACKUP = ".bak"
+
 ReturnValue = collections.namedtuple("ReturnValue", "path error")  # what load and save returns
 
 home = None  # user's home folder
+
 
 def bites(s): return s.encode('utf-8')  # name derived from "bytes" which would have been an alternative implementation
 
@@ -125,6 +131,7 @@ class Configr(object):
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(os.__file__)))).hexdigest()[:4],
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation)))).hexdigest()[:4],
         EXTENSION))  # always use current (installed or local) library's location and caller's location to separate configs
+    debug("Loading configuration %r" % config)
     try:
       with open(config, "r") as fd:
         loaded = json.loads(fd.read())
@@ -132,6 +139,7 @@ class Configr(object):
         for k, v in [(K, V) for K, V in loaded.items() if K not in ignores]: _[k] = v
       _.__loadedFrom = ReturnValue(config, None)  # memorize file location loaded from
     except Exception as E:
+      debug(str(E))
       _.__loadedFrom = ReturnValue(None, E)  # callers can detect errors by checking this flag
     return _.__loadedFrom
 
@@ -147,9 +155,10 @@ class Configr(object):
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(os.__file__)))).hexdigest()[:4],
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation)))).hexdigest()[:4],
         EXTENSION))  # always use current (installed or local) library's location and caller's location to separate configs
+    debug("Storing configuration %r" % config)
     try: os.makedirs(_.__home)
     except: pass  # already exists
-    try: shutil.copy2(config, config + ".bak")
+    try: shutil.copy2(config, config + BACKUP)
     except: pass
     try:
       with open(config, "w") as fd:
@@ -158,6 +167,7 @@ class Configr(object):
         fd.write(json.dumps(tmp))
       _.__savedTo = ReturnValue(config, None)
     except Exception as E:
+      debug(str(E))
       _.__savedTo = ReturnValue(None, E)
     return _.__savedTo
 

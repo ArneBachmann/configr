@@ -1,5 +1,6 @@
 import doctest
 import json
+import logging
 import os
 import unittest
 import sys
@@ -41,13 +42,16 @@ class Test_AppDir(unittest.TestCase):
     _.assertIsNotNone(value.path)
     _.assertIsNone(value.error)
     _.assertEqual(value, c.__savedTo)
+    _.assertEqual(os.getcwd(), os.path.dirname(c.__savedTo.path))
     _.assertEqual("a", c["a"])
     _.assertEqual("b", c.b)
-    with open(c.__savedTo.path, "r") as fd: contents = json.loads(fd.read())
+    name = c.__savedTo.path
+    with open(name, "r") as fd: contents = json.loads(fd.read())
     _.assertEqual({"a": "a", "b": "b"}, contents)
     # Now load and see if all is correct
     c = configr.Configr("myapp")
-    value = c.loadSettings(location = os.getcwd(), data = {"c": 33})
+    value = c.loadSettings(location = os.getcwd(), data = {"c": 33}, clientCodeLocation = __file__)
+    _.assertEqual(name, c.__loadedFrom.path)
     _.assertIsNotNone(value.path)
     _.assertIsNone(value.error)
     _.assertEqual(value, c.__loadedFrom)
@@ -55,6 +59,9 @@ class Test_AppDir(unittest.TestCase):
     _.assertEqual(c["b"], "b")
     _.assertEqual(c.c, 33)
     os.unlink(value.path)
+    value = c.loadSettings(location = "bla", clientCodeLocation = __file__)  # provoke error
+    _.assertIsNone(value.path)
+    _.assertIsNotNone(value.error)
 
 
 
@@ -65,4 +72,5 @@ def load_tests(loader, tests, ignore):
 
 
 if __name__ == "__main__":
+  logging.basicConfig(level = logging.DEBUG, stream = sys.stderr, format = "%(asctime)-25s %(levelname)-8s %(name)-12s | %(message)s")
   print(unittest.main())

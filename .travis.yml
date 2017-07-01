@@ -20,6 +20,7 @@ matrix:
 #      dist: precise
 #      python: pypy3
 install: "pip install coverage python-coveralls"  # or "coveralls" instead (alternative package)
-script: python setup.py build && cd configr && coverage run test.py && coverage html && coverage annotate test.py
+# Removing appdirs to increase code coverage... better would be to test both scenarios
+script: python setup.py build && pip remove appdirs || coverage run configr/test.py && coverage html && coverage annotate configr/test.py
 after_success:
   - coveralls
