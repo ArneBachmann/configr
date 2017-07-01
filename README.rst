@@ -12,7 +12,7 @@ Configr
    :target: https://coveralls.io/github/ArneBachmann/configr?branch=master
 
 .. image:: https://img.shields.io/pypi/pyversions/Django.svg
-
+   :target: https://github.com/ArneBachmann/configr
 
 
 Synopsis
