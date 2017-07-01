@@ -56,7 +56,7 @@ def determineHomeFolder(name):
 class Configr(object):
   ''' Main configuration object. Property access directly on attributes or dict-style access. '''
 
-  exports = {"loadSettings", "saveSettings"}  # functions to accept calling
+  exports = {"loadSettings", "saveSettings", "keys"}  # functions to accept calling
   internals = {"__name", "__map", "__defaults", "__savedTo", "__loadedFrom"}  # app name, dict, fallbacks, hints
 
   def __init__(_, name, data = {}, defaults = {}):
@@ -160,6 +160,14 @@ class Configr(object):
     except Exception as E:
       _.__savedTo = ReturnValue(None, E)
     return _.__savedTo
+
+  def keys(_):
+    ''' Return configuration's keys.
+    >>> c = Configr("X", data = {1:1, 2:2, "c":"c"})
+    >>> print(sorted(c.keys()))
+    ['1', '2', 'c']
+    '''
+    return _.__map.keys()
 
 
 if __name__ == '__main__':
