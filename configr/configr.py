@@ -203,8 +203,8 @@ class Configr(object):
   def values(_):
     ''' Return configuration's values.
     >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"})
-    >>> print(sorted(c.values()))
-    [1, 2, 'c']
+    >>> print(sorted([str(v) for v in c.values()]))
+    ['1', '2', 'c']
     '''
     return _.__map.values()
 
