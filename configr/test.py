@@ -68,6 +68,9 @@ class Test_AppDir(unittest.TestCase):
     del c.a
     _.assertEqual(1, len(c.keys()))
     _.assertIn("c", c.keys())
+    # Now stringify
+    _.assertEqual("Configr(c: 33)", str(c))
+    _.assertEqual("Configr(c: 33)", repr(c))
     # Testing map functions: already done in doctest
 
 

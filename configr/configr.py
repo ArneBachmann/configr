@@ -133,10 +133,10 @@ class Configr(object):
     del _.__map[key]  # delegate to dictionary style
 
   def __repr__(_):
-    return "Configr(%s)" % ", ".join(_.__map.keys())
+    return "Configr(%s)" % ", ".join(["%s: %s" % (k, repr(v)) for k, v in _.__map.items()])
 
   def __str__(_):
-    return "c(%s)" % ", ".join(_.__map.keys())
+    return "Configr(%s)" % ", ".join(["%s: %s" % (k, str(v)) for k, v in _.__map.items()])
 
 
   def loadSettings(_, data = {}, location = None, ignores = [], clientCodeLocation = 'undefined'):
