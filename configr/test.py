@@ -63,7 +63,12 @@ class Test_AppDir(unittest.TestCase):
     value = c.loadSettings(location = "bla", clientCodeLocation = __file__)  # provoke error
     _.assertIsNone(value.path)
     _.assertIsNotNone(value.error)
-
+    # Now test removal
+    del c["b"]
+    del c.a
+    _.assertEqual(1, len(c.keys()))
+    _.assertIn("c", c.keys())
+    # Testing map functions: already done in doctest
 
 
 def load_tests(loader, tests, ignore):

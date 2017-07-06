@@ -64,7 +64,7 @@ def determineHomeFolder(name):
 class Configr(object):
   ''' Main configuration object. Property access directly on attributes or dict-style access. '''
 
-  exports = {"loadSettings", "saveSettings", "keys"}  # functions to accept calling
+  exports = {"loadSettings", "saveSettings", "keys", "values", "items", "__repr__", "__str__"}  # set of function names to accept calling
   internals = {"__name", "__map", "__defaults", "__savedTo", "__loadedFrom"}  # app name, dict, fallbacks, hints
 
   def __init__(_, name, data = {}, defaults = {}):
@@ -93,32 +93,51 @@ class Configr(object):
     if home is None: determineHomeFolder(name)  # determine only once
 
   def __getitem__(_, key):
-    ''' Query a configuration value via dictionary access. '''
+    ''' Query a configuration value via dictionary access, e.g. value = obj[name]. '''
     key = str(key)  # always convert keys to strings
     if key in Configr.internals: return getattr(_, key)  # e.g. __map attribute
     try: return _.__map[key]
     except: return _.__defaults[key]
 
   def __setitem__(_, key, value):
-    ''' Define a configuration value via dictionary access. '''
+    ''' Define a configuration value via dictionary access, e.g. obj[name] = value. '''
     _.__map[str(key)] = value  # always convert keys to strings
 
+  def __delitem__(_, key):
+    ''' Remove a configuration entry via dictionary access, e.g. del obj[name]. '''
+    del _.__map[str(key)]
+
   def __getattribute__(_, key):
-    ''' Query a configuration value via attribute access. '''
+    ''' Query a configuration value via attribute access, e.g. value = obj.name. '''
     key = str(key)
     if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary to remove object name key prefix
-    if key.startswith("_Test_AppDir"): key = key[len("_Test_AppDir"):]  # for unit testing
+    elif key.startswith("_Test_AppDir"): key = key[len("_Test_AppDir"):]  # for unit testing
     if key in Configr.internals or key in Configr.exports: return object.__getattribute__(_, key)
     try: return _.__map[key]
     except: return _.__defaults[key]
 
   def __setattr__(_, key, value):
-    ''' Define a configuration value via attribute access. '''
+    ''' Define a configuration value via attribute access, e.g. obj.name = value. '''
     key = str(key)
     if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary
-    if key.startswith("_Test_AppDir"): key = key[len("_Test_AppDir"):]  # for unit testing
+    elif key.startswith("_Test_AppDir"): key = key[len("_Test_AppDir"):]  # for unit testing
     if key in Configr.internals: object.__setattr__(_, key, value)
     else: _.__map[key] = value
+
+  def __delattr__(_, key):
+    ''' Remove an configuration entry via attribute access, e.g. del obj.name. '''
+    key = str(key)
+    if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary
+    elif key.startswith("_Test_AppDir"): key = key[len("_Test_AppDir"):]  # for unit testing
+    if key in Configr.internals or key in Configr.exports: return
+    del _.__map[key]  # delegate to dictionary style
+
+  def __repr__(_):
+    return "Configr(%s)" % ", ".join(_.__map.keys())
+
+  def __str__(_):
+    return "c(%s)" % ", ".join(_.__map.keys())
+
 
   def loadSettings(_, data = {}, location = None, ignores = [], clientCodeLocation = 'undefined'):
     ''' Load settings from file system and store on self object.
@@ -175,11 +194,27 @@ class Configr(object):
 
   def keys(_):
     ''' Return configuration's keys.
-    >>> c = Configr("X", data = {1:1, 2:2, "c":"c"})
+    >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"})
     >>> print(sorted(c.keys()))
     ['1', '2', 'c']
     '''
-    return _.__map.keys()
+    return _.__map.keys()  # TODO assign as class method?
+
+  def values(_):
+    ''' Return configuration's values.
+    >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"})
+    >>> print(sorted(c.values()))
+    [1, 2, 'c']
+    '''
+    return _.__map.values()
+
+  def items(_):
+    ''' Return (unsorted) list or dict_items object for all configuration's key-value pairs.
+    >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"})
+    >>> print(sorted(c.items()))
+    [('1', 1), ('2', 2), ('c', 'c')]
+    '''
+    return _.__map.items()
 
 
 if __name__ == '__main__':

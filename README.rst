@@ -14,6 +14,9 @@ Configr
 .. image:: https://img.shields.io/pypi/pyversions/Django.svg
    :target: https://github.com/ArneBachmann/configr
 
+.. image:: https://img.shields.io/github/license/mashape/apistatus.svg
+   :target: https://github.com/ArneBachmann/configr
+
 
 Synopsis
 --------
@@ -60,8 +63,9 @@ The Configr object has the following functions::
     __init__(_, name, data = {}, defaults = {})  # Constructor. "data" initializes the configuration, while "defaults" contains fallback values not explicity set on the configuration data.
     saveSettings(_, keys = None, location = None)  # Persist the configuration. "keys" limits the entries written. "location" is a file system path
     loadSettings(_, data = {}, location = None, ignores = [])  # load configuration. "data" is used if its key is not found in the file. "ignores" are keys to not load. location" is a file system path
+    keys(_)  # returns list of keys in the configuration object (Python 2) or an dict_keys object (Python 3)
 
-Configr object supports dictionary and attribute style access to get or set entries.
+Configr objects support dictionary and attribute style access to get or set entries, as well as the usual means to remove entries via ``del`` and ``remove()``.
 Both "loadSettings" and "saveSettings" support an additional "clientCodeLocation" parameter to allow passing a path to further separated several installation locations of the same app on a single file system. This allows to separate settings for each installation, if they are placed in different directories.
 
 Both functions also return a named 2-tuple containing last loaded/saved file location in the first (.path), or an exception in the second (.error) position.
