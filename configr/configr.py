@@ -198,7 +198,7 @@ class Configr(object):
     >>> print(sorted(c.keys()))
     ['1', '2', 'c']
     '''
-    return _.__map.keys()  # TODO assign as class method?
+    return _.__map.keys()
 
   def values(_):
     ''' Return configuration's values.

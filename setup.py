@@ -32,7 +32,7 @@ except: print("Warning: test suite failed")
 
 # Clean old binaries
 try:
-  for file in (f for f in os.listdir("dist") if f[f.rindex(".")+1:] in (".tar.gz", "zip",)):
+  for file in (f for f in os.listdir("dist") if any([f.endswith(ext) for ext in (".tar.gz", "zip")])):
     try: os.unlink(os.path.join("dist", file))
     except: print("Cannot remove " + file)
 except: pass
