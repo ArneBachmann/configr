@@ -11,8 +11,6 @@ Optional external dependencies:  appdirs (automatically pulled by pip)
 Optional standard modules:       pwd, win32com
 '''
 
-try: from configr.version import __version_info__, __version__  # created and used by setup.py
-except: from version import __version_info__, __version__  # Python 2 logic
 
 # Standard modules
 import collections
@@ -21,6 +19,11 @@ import json
 import logging
 import os
 import shutil
+import uuid
+
+
+try: import configr.version  # created and used by setup.py
+except: import version  # Python 2 logic
 
 
 _log = logging.getLogger(__name__); debug, info, warn, error = _log.debug, _log.info, _log.warn, _log.error
@@ -67,7 +70,7 @@ class Configr(object):
   exports = {"loadSettings", "saveSettings", "keys", "values", "items", "__repr__", "__str__"}  # set of function names to accept calling
   internals = {"__name", "__map", "__defaults", "__savedTo", "__loadedFrom"}  # app name, dict, fallbacks, hints
 
-  def __init__(_, name, data = {}, defaults = {}):
+  def __init__(_, name = None, data = {}, defaults = {}):
     ''' Create config object for interaction with settings.
         name: file name, usually corresponding with main app name
         data: configuration objects to store initially
@@ -87,6 +90,7 @@ class Configr(object):
     >>> print(c.d) # same for attribute access
     d
     '''
+    if name is None: name = uuid.uuid4()
     _.__name = name
     _.__defaults = {str(k): v for k, v in defaults.items()}
     _.__map = {str(k): v for k, v in data.items()}  # create shallow copy

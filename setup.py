@@ -25,7 +25,8 @@ __version__ = r'{fullName}'
 """.format(version = version, fullName = versionString + "-" + extra))
 
 from configr import configr, test  # needed for version strings
-README = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.rst')).read() % configr.__version__
+README = "\n".join(["Configr " + configr.version.__version__] + open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.rst')).read().split("\n")[1:])
+with open("README.rst", "w") as fd: fd.write(README)
 # CHANGES = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CHANGES.rst')).read()
 
 # Ensure unit tests are fine
@@ -40,7 +41,7 @@ try:
     except: print("Cannot remove " + file)
 except: pass
 
-print("Building configr version " + configr.__version__)
+print("Building configr version " + configr.version.__version__)
 setup(
   name = 'configr',
   version = versionString,  # without extra

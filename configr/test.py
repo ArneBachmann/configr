@@ -15,8 +15,9 @@ class Test_AppDir(unittest.TestCase):
   ''' Test suite. '''
 
   def tests_metadata(_):
-    _.assertTrue(hasattr(configr, "__version__"))
-    _.assertTrue(hasattr(configr, "__version_info__"))
+    _.assertTrue(hasattr(configr, "version"))
+    _.assertTrue(hasattr(configr.version, "__version__"))
+    _.assertTrue(hasattr(configr.version, "__version_info__"))
 
   def test_details(_):
     try:

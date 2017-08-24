@@ -1,5 +1,5 @@
-Configr %s
-==========
+Configr 2017.1824.3112-d5ad232
+=======
 
 
 .. image:: https://travis-ci.org/ArneBachmann/configr.svg?branch=master
