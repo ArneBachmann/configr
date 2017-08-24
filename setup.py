@@ -25,6 +25,7 @@ __version__ = r'{fullName}'
 """.format(version = version, fullName = versionString + "-" + extra))
 
 from configr import configr, test  # needed for version strings
+print(dir(configr))
 README = "\n".join(["Configr " + configr.version.__version__] + open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.rst')).read().split("\n")[1:])
 with open("README.rst", "w") as fd: fd.write(README)
 # CHANGES = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CHANGES.rst')).read()

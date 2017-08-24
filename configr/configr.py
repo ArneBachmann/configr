@@ -22,7 +22,7 @@ import shutil
 import uuid
 
 
-try: import configr.version  # created and used by setup.py
+try: import configr.version as version  # created and used by setup.py
 except: import version  # Python 2 logic
 
 
