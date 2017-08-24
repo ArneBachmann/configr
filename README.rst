@@ -1,5 +1,5 @@
-Configr
-=======
+Configr %s
+==========
 
 
 .. image:: https://travis-ci.org/ArneBachmann/configr.svg?branch=master
