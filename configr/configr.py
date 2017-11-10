@@ -7,8 +7,8 @@ A practical configuration library for your Python apps.
 https://pypi.python.org/pypi/configr/
 https://github.com/ArneBachmann/configr
 
-Optional external dependencies:  appdirs (automatically pulled by pip)
-Optional standard modules:       pwd, win32com
+Optional external dependencies:  appdirs (automatically installed when using pip)
+Optional standard modules:       pwd, win32com (used on Linux or Windows, respectively)
 '''
 
 
@@ -49,7 +49,7 @@ def determineHomeFolder(name):
   global home
   try:
     import appdirs  # optional dependency which already solves some some problems for us
-    home = appdirs.user_data_dir(name, name)  # app/author
+    home = appdirs.user_data_dir(name, "configr")  # app/author
   except:
     try:  # get user home regardless of currently set environment variables
       from win32com.shell import shell, shellcon
@@ -62,6 +62,7 @@ def determineHomeFolder(name):
         home = os.getenv("USERPROFILE")  # for windows only
         if home is None: home = os.expanduser("~")  # recommended cross-platform solution, but could refer to a mapped network drive on Windows
   if home is None: raise Exception("Cannot reliably determine user's home directory, please file a bug report at https://github.com/ArneBachmann/configr")
+  return home
 
 
 class Configr(object):
@@ -142,16 +143,15 @@ class Configr(object):
   def __str__(_):
     return "Configr(%s)" % ", ".join(["%s: %s" % (k, str(v)) for k, v in _.__map.items()])
 
-
   def loadSettings(_, data = {}, location = None, ignores = [], clientCodeLocation = 'undefined'):
     ''' Load settings from file system and store on self object.
         data: settings to use only for keys missing in the file
         location: load from a fixed path, e.g. system-wide global settings like app dir
-        clientCodeLocation: should be a call to os.__file__ from the caller's script to separate configuration for different tools
+        clientCodeLocation: should be a call to os.path.abspath(__file__) from the caller's script to separate configuration for different tool installation locations
         ignores: list of keys to ignore and not load from file
         returns: ReturnValue 2-tuple(config-file or None, None or Exception)
     '''
-    config = os.path.join(_.__home if location is None else location, "%s-%s-%s%s" % (
+    config = os.path.join(home if location is None else location, "%s-%s-%s%s" % (
         _.__name,
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(os.__file__)))).hexdigest()[:4],
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation)))).hexdigest()[:4],
@@ -175,13 +175,13 @@ class Configr(object):
         clientCodeLocation: should be a call to os.__file__ from the caller's script to separate configuration for different tools
         returns: ReturnValue 2-tuple(config-file or None, None or Exception)
     '''
-    config = os.path.join(_.__home if location is None else location, "%s-%s-%s%s" % (
+    config = os.path.join(home if location is None else location, "%s-%s-%s%s" % (
         _.__name,
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(os.__file__)))).hexdigest()[:4],
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation)))).hexdigest()[:4],
         EXTENSION))  # always use current (installed or local) library's location and caller's location to separate configs
     debug("Storing configuration %r" % config)
-    try: os.makedirs(_.__home)
+    try: os.makedirs(home)
     except: pass  # already exists
     try: shutil.copy2(config, config + BACKUP)
     except: pass

@@ -8,11 +8,13 @@ from setuptools import setup
 # Upload to PyPI by running setup.py clean build_py sdist bdist upload with a correctly set up ~/.pypirc (need HOME variable set correctly on Windows)
 
 if os.path.exists(".git"):
-  p = subprocess.Popen("git describe --always", shell = sys.platform != 'win32', bufsize = 1, stdout = subprocess.PIPE)
-  so, se = p.communicate()
-  extra = (so.strip() if sys.version_info.major < 3 else so.strip().decode(sys.stdout.encoding)).replace("\n", "-")
-  if "\x0d" in extra: extra = extra.split("\x0d")[1]
-  print("Found Git hash %s" % extra)  # TODO use logging module instead
+  try:
+    p = subprocess.Popen("git describe --always", shell = sys.platform != 'win32', bufsize = 1, stdout = subprocess.PIPE)
+    so, se = p.communicate()
+    extra = (so.strip() if sys.version_info.major < 3 else so.strip().decode(sys.stdout.encoding)).replace("\n", "-")
+    if "\x0d" in extra: extra = extra.split("\x0d")[1]
+    print("Found Git hash %s" % extra)  # TODO use logging module instead
+  except: extra = "svn"
 else:
   extra = "svn"
 md = time.localtime()
@@ -26,7 +28,7 @@ __version__ = r'{fullName}'
 
 from configr import configr, test  # needed for version strings
 print(dir(configr))
-README = "\n".join(["Configr " + configr.version.__version__] + open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.rst')).read().split("\n")[1:])
+README = "\n".join(["Configr " + versionString] + open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.rst')).read().split("\n")[1:])
 with open("README.rst", "w") as fd: fd.write(README)
 # CHANGES = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CHANGES.rst')).read()
 
