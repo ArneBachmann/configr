@@ -187,7 +187,7 @@ class Configr(object):
     except: pass
     try:
       with open(config, "w") as fd:
-        toWrite = [K for K in _.__map.keys() if K not in internals] if keys is None else keys
+        toWrite = [K for K in _.__map.keys() if K not in Configr.internals] if keys is None else keys
         tmp = {k: _[k] for k in toWrite}
         fd.write(json.dumps(tmp))
       _.__savedTo = ReturnValue(config, None)
