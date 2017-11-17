@@ -26,7 +26,7 @@ try: import configr.version as version  # created and used by setup.py
 except: import version  # Python 2 logic
 
 
-_log = logging.getLogger(__name__); debug, info, warn, error = _log.debug, _log.info, _log.warn, _log.error
+_log = logging.getLogger(__name__); debug, info, warn, error = _log.debug, _log.info, _log.warn, _log.error  # logging must be configured in caller app
 
 EXTENSION = ".cfg"
 BACKUP = ".bak"
@@ -62,6 +62,7 @@ def determineHomeFolder(name):
         home = os.getenv("USERPROFILE")  # for windows only
         if home is None: home = os.expanduser("~")  # recommended cross-platform solution, but could refer to a mapped network drive on Windows
   if home is None: raise Exception("Cannot reliably determine user's home directory, please file a bug report at https://github.com/ArneBachmann/configr")
+  debug("Determined home folder: %s" % home)
   return home
 
 
@@ -69,7 +70,7 @@ class Configr(object):
   ''' Main configuration object. Property access directly on attributes or dict-style access. '''
 
   exports = {"loadSettings", "saveSettings", "keys", "values", "items", "__repr__", "__str__"}  # set of function names to accept calling
-  internals = {"__name", "__map", "__defaults", "__savedTo", "__loadedFrom"}  # app name, dict, fallbacks, hints
+  internals = {"__class__", "__name", "__map", "__defaults", "__savedTo", "__loadedFrom"}  # app name, dict, fallbacks, hints
 
   def __init__(_, name = None, data = {}, defaults = {}):
     ''' Create config object for interaction with settings.
@@ -93,7 +94,7 @@ class Configr(object):
     '''
     if name is None: name = uuid.uuid4()
     _.__name = name
-    _.__defaults = {str(k): v for k, v in defaults.items()}
+    _.__defaults = {str(k): v for k, v in defaults.items()}  # shallow copy by-value
     _.__map = {str(k): v for k, v in data.items()}  # create shallow copy
     if home is None: determineHomeFolder(name)  # determine only once
 
@@ -147,6 +148,7 @@ class Configr(object):
     ''' Load settings from file system and store on self object.
         data: settings to use only for keys missing in the file
         location: load from a fixed path, e.g. system-wide global settings like app dir
+        ignores: a list of keys to exempt from reading
         clientCodeLocation: should be a call to os.path.abspath(__file__) from the caller's script to separate configuration for different tool installation locations
         ignores: list of keys to ignore and not load from file
         returns: ReturnValue 2-tuple(config-file or None, None or Exception)
@@ -168,10 +170,11 @@ class Configr(object):
       _.__loadedFrom = ReturnValue(None, E)  # callers can detect errors by checking this flag
     return _.__loadedFrom
 
-  def saveSettings(_, keys = None, location = None, clientCodeLocation = 'undefined'):
+  def saveSettings(_, keys = None, location = None, ignores = [], clientCodeLocation = 'undefined'):
     ''' Save settings stored onself object to file system.
         keys: if defined, a list of keys to write
         location: save to a fixed path, e.g. system-wide global settings like app dir
+        ignores: a list of keys to exempt from writing
         clientCodeLocation: should be a call to os.__file__ from the caller's script to separate configuration for different tools
         returns: ReturnValue 2-tuple(config-file or None, None or Exception)
     '''
@@ -187,7 +190,7 @@ class Configr(object):
     except: pass
     try:
       with open(config, "w") as fd:
-        toWrite = [K for K in _.__map.keys() if K not in Configr.internals] if keys is None else keys
+        toWrite = [K for K in _.__map.keys() if K not in Configr.internals and K not in ignores] if keys is None else keys
         tmp = {k: _[k] for k in toWrite}
         fd.write(json.dumps(tmp))
       _.__savedTo = ReturnValue(config, None)

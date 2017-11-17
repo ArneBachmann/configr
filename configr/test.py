@@ -73,6 +73,7 @@ class Test_AppDir(unittest.TestCase):
     _.assertEqual("Configr(c: 33)", str(c))
     _.assertEqual("Configr(c: 33)", repr(c))
     # Testing map functions: already done in doctest
+    # TODO test ignores option for saveSettings
 
 
 def load_tests(loader, tests, ignore):

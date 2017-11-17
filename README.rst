@@ -1,4 +1,4 @@
-Configr 2017.2110.3125
+Configr 2017.2117.2631
 =======
 
 
@@ -74,11 +74,11 @@ Both functions also return a named 2-tuple containing last loaded/saved file loc
 Building, packaging and distribution
 ------------------------------------
 
-Run test suite under ``configr`` via ``python test.py``. If there are no problems, continue:
-Run ``python setup.py build`` to raise the version number.
-Run ``git commit`` and ``git push`` and let Travis CI run all tests. If the code has no problems, continue:
-Run ``python setup.py build sdist`` to package the module.
-Run ``twine upload dist/*.tar.gz`` to upload the module to PyPI.
+- Run test suite under ``configr`` via ``python test.py`` with Python 2 and Python 3. If there are no problems, continue:
+- Run ``python setup.py build`` to raise the version number.
+- Run ``git commit`` and ``git push`` and let Travis CI run all tests. If the code has no problems, continue:
+- Run ``python setup.py sdist`` to package the module with previously generated version info.
+- Run ``twine upload dist/*.tar.gz`` to upload the module to PyPI.
 
 
 Todo
