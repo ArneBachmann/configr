@@ -178,13 +178,14 @@ class Configr(object):
         clientCodeLocation: should be a call to os.path.abspath(__file__) from the caller's script to separate configuration for different tools
         returns: ReturnValue 2-tuple(config-file-path or None, None or Exception)
     '''
-    config = os.path.join(home["value"] if location is None else location, "%s-%s-%s%s" % (
+    path = home["value"] if location is None else location
+    config = os.path.join(path, "%s-%s-%s%s" % (
         _.__name,
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(os.__file__)))).hexdigest()[:4],  # python library path
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation if clientCodeLocation is not None else 'undefined')))).hexdigest()[:4],  # caller location
         EXTENSION))  # always use current (installed or local) library's location and caller's location to separate configs
     debug("Storing configuration %r" % config)
-    try: os.makedirs(home["value"])
+    try: os.makedirs(path)
     except: pass  # already exists
     try: shutil.copy2(config, config + BACKUP)
     except: pass

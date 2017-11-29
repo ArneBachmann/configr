@@ -4,21 +4,93 @@ matrix:
     - os: linux
       dist: trusty
       python: 2.7
-    - os: linux
-      dist: trusty
-      python: 3.5
+      env:
+        - UBUNTU=trusty
     - os: linux
       dist: precise
       python: 2.7
+      env:
+        - UBUNTU=precise
+    - os: linux
+      dist: trusty
+      python: 3.2
+      env:
+        - UBUNTU=trusty
+    - os: linux
+      dist: precise
+      python: 3.2
+      env:
+        - UBUNTU=precise
+    - os: linux
+      dist: trusty
+      python: 3.3
+      env:
+        - UBUNTU=trusty
+    - os: linux
+      dist: precise
+      python: 3.3
+      env:
+        - UBUNTU=precise
+    - os: linux
+      dist: trusty
+      python: 3.4
+      env:
+        - UBUNTU=trusty
+    - os: linux
+      dist: precise
+      python: 3.4
+      env:
+        - UBUNTU=precise
+    - os: linux
+      dist: trusty
+      python: 3.5
+      env:
+        - UBUNTU=trusty
     - os: linux
       dist: precise
       python: 3.5
+      env:
+        - UBUNTU=precise
+    - os: linux
+      dist: trusty
+      python: 3.6
+      env:
+        - UBUNTU=trusty
+    - os: linux
+      dist: precise
+      python: 3.6
+      env:
+        - UBUNTU=precise
+    - os: linux
+      dist: trusty
+      python: '3.7-dev'
+      env:
+        - UBUNTU=trusty
+    - os: linux
+      dist: precise
+      python: '3.7-dev'
+      env:
+        - UBUNTU=precise
     - os: linux
       dist: precise
       python: pypy
-#    - os: linux
-#      dist: precise
-#      python: pypy3
+      env:
+        - UBUNTU=precise
+    - os: linux
+      dist: trusty
+      python: pypy
+      env:
+        - UBUNTU=trusty
+    - os: linux
+      dist: precise
+      python: pypy3
+      env:
+        - UBUNTU=precise
+    - os: linux
+      dist: trusty
+      python: pypy3
+      env:
+        - UBUNTU=trusty
 install: "pip install coverage python-coveralls"  # or "coveralls" instead (alternative package)
 # Removing appdirs to increase code coverage... better would be to test both scenarios (with and without appdirs available)
 script: python setup.py build && pip remove appdirs || coverage run --source=configr configr/test.py && coverage html && coverage annotate configr/test.py
