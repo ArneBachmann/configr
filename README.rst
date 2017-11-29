@@ -1,4 +1,4 @@
-Configr 2017.2129.2815
+Configr 2017.2129.2820
 =======
 
 
@@ -75,9 +75,8 @@ Building, packaging and distribution
 ------------------------------------
 
 - Run test suite under ``configr`` via ``python test.py`` with Python 2 and Python 3. If there are no problems, continue:
-- Run ``python setup.py build`` to raise the version number.
-- Run ``git commit`` and ``git push`` and let Travis CI run all tests. If the code has no problems, continue:
-- Run ``python setup.py sdist`` to package the module with previously generated version info.
+- Run ``python setup.py clean build sdist`` to compile, raise the version number, and create the package archive.
+- Run ``git commit`` and ``git push`` and let Travis CI run all tests. If the changes have no problems, continue:
 - Run ``twine upload dist/*.tar.gz`` to upload the module to PyPI.
 
 
