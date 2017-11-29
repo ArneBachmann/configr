@@ -33,7 +33,7 @@ BACKUP = ".bak"
 
 ReturnValue = collections.namedtuple("ReturnValue", "path error")  # what load and save returns
 
-home = None  # user's home folder
+home = {"value": None}  # user's home folder
 
 
 def bites(s): return s.encode('utf-8')  # name derived from "bytes" which would have been an alternative implementation
@@ -46,24 +46,23 @@ def determineHomeFolder(name):
       returns: None
       Side effect: sets module-global "home" variable
   '''
-  global home
   try:
     import appdirs  # optional dependency which already solves some some problems for us
-    home = appdirs.user_data_dir(name, "configr")  # app/author
+    home["value"] = appdirs.user_data_dir(name, "configr")  # app/author
   except:
     try:  # get user home regardless of currently set environment variables
       from win32com.shell import shell, shellcon
-      home = shell.SHGetFolderPath(0, shellcon.CSIDL_PROFILE, None, 0)
+      home["value"] = shell.SHGetFolderPath(0, shellcon.CSIDL_PROFILE, None, 0)
     except:
       try:  # unix-like native solution ignoring environment variables
         from pwd import getpwuid
-        home = getpwuid(os.getuid()).pw_dir
+        home["value"] = getpwuid(os.getuid()).pw_dir
       except:  # now try standard approaches
-        home = os.getenv("USERPROFILE")  # for windows only
-        if home is None: home = os.expanduser("~")  # recommended cross-platform solution, but could refer to a mapped network drive on Windows
-  if home is None: raise Exception("Cannot reliably determine user's home directory, please file a bug report at https://github.com/ArneBachmann/configr")
-  debug("Determined home folder: %s" % home)
-  return home
+        home["value"] = os.getenv("USERPROFILE")  # for windows only
+        if home["value"] is None: home["value"] = os.expanduser("~")  # recommended cross-platform solution, but could refer to a mapped network drive on Windows
+  if home["value"] is None: raise Exception("Cannot reliably determine user's home directory, please file a bug report at https://github.com/ArneBachmann/configr")
+  debug("Determined home folder: %s" % home["value"])
+  return home["value"]  # TODO remove this line, as it looks like a function return value
 
 
 class Configr(object):
@@ -96,7 +95,7 @@ class Configr(object):
     _.__name = name
     _.__defaults = {str(k): v for k, v in defaults.items()}  # shallow copy by-value
     _.__map = {str(k): v for k, v in data.items()}  # create shallow copy
-    if home is None: determineHomeFolder(name)  # determine only once
+    if home["value"] is None: determineHomeFolder(name)  # determine only once
 
   def __getitem__(_, key):
     ''' Query a configuration value via dictionary access, e.g. value = obj[name]. '''
@@ -144,19 +143,19 @@ class Configr(object):
   def __str__(_):
     return "Configr(%s)" % ", ".join(["%s: %s" % (k, str(v)) for k, v in _.__map.items()])
 
-  def loadSettings(_, data = {}, location = None, ignores = [], clientCodeLocation = 'undefined'):
+  def loadSettings(_, data = {}, location = None, ignores = [], clientCodeLocation = None):
     ''' Load settings from file system and store on self object.
         data: settings to use only for keys missing in the file
         location: load from a fixed path, e.g. system-wide global settings like app dir
         ignores: a list of keys to exempt from reading
         clientCodeLocation: should be a call to os.path.abspath(__file__) from the caller's script to separate configuration for different tool installation locations
         ignores: list of keys to ignore and not load from file
-        returns: ReturnValue 2-tuple(config-file or None, None or Exception)
+        returns: ReturnValue 2-tuple(config-file-path or None, None or Exception)
     '''
-    config = os.path.join(home if location is None else location, "%s-%s-%s%s" % (
+    config = os.path.join(home["value"] if location is None else location, "%s-%s-%s%s" % (
         _.__name,
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(os.__file__)))).hexdigest()[:4],
-        hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation)))).hexdigest()[:4],
+        hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation if clientCodeLocation is not None else 'undefined')))).hexdigest()[:4],
         EXTENSION))  # always use current (installed or local) library's location and caller's location to separate configs
     debug("Loading configuration %r" % config)
     try:
@@ -168,23 +167,24 @@ class Configr(object):
     except Exception as E:
       debug(str(E))
       _.__loadedFrom = ReturnValue(None, E)  # callers can detect errors by checking this flag
+    debug("Finished loading configuration %r" % config)
     return _.__loadedFrom
 
-  def saveSettings(_, keys = None, location = None, ignores = [], clientCodeLocation = 'undefined'):
+  def saveSettings(_, keys = None, location = None, ignores = [], clientCodeLocation = None):
     ''' Save settings stored onself object to file system.
-        keys: if defined, a list of keys to write
-        location: save to a fixed path, e.g. system-wide global settings like app dir
+        keys: if defined, a list of keys to write, ignoring all others
+        location: save to a fixed path instead of default user configuration folder, e.g. system-wide global settings like app dir
         ignores: a list of keys to exempt from writing
-        clientCodeLocation: should be a call to os.__file__ from the caller's script to separate configuration for different tools
-        returns: ReturnValue 2-tuple(config-file or None, None or Exception)
+        clientCodeLocation: should be a call to os.path.abspath(__file__) from the caller's script to separate configuration for different tools
+        returns: ReturnValue 2-tuple(config-file-path or None, None or Exception)
     '''
-    config = os.path.join(home if location is None else location, "%s-%s-%s%s" % (
+    config = os.path.join(home["value"] if location is None else location, "%s-%s-%s%s" % (
         _.__name,
-        hashlib.sha1(bites(os.path.dirname(os.path.abspath(os.__file__)))).hexdigest()[:4],
-        hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation)))).hexdigest()[:4],
+        hashlib.sha1(bites(os.path.dirname(os.path.abspath(os.__file__)))).hexdigest()[:4],  # python library path
+        hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation if clientCodeLocation is not None else 'undefined')))).hexdigest()[:4],  # caller location
         EXTENSION))  # always use current (installed or local) library's location and caller's location to separate configs
     debug("Storing configuration %r" % config)
-    try: os.makedirs(home)
+    try: os.makedirs(home["value"])
     except: pass  # already exists
     try: shutil.copy2(config, config + BACKUP)
     except: pass
@@ -197,10 +197,12 @@ class Configr(object):
     except Exception as E:
       debug(str(E))
       _.__savedTo = ReturnValue(None, E)
+    debug("Finished storing configuration %r" % config)
     return _.__savedTo
 
   def keys(_):
     ''' Return configuration's keys.
+    >>> from configr import Configr
     >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"})
     >>> print(sorted(c.keys()))
     ['1', '2', 'c']
@@ -209,6 +211,7 @@ class Configr(object):
 
   def values(_):
     ''' Return configuration's values.
+    >>> from configr import Configr
     >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"})
     >>> print(sorted([str(v) for v in c.values()]))
     ['1', '2', 'c']
@@ -217,6 +220,7 @@ class Configr(object):
 
   def items(_):
     ''' Return (unsorted) list or dict_items object for all configuration's key-value pairs.
+    >>> from configr import Configr
     >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"})
     >>> print(sorted(c.items()))
     [('1', 1), ('2', 2), ('c', 'c')]

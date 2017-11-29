@@ -26,14 +26,14 @@ __version_info__ = ({version[0]}, {version[1]}, {version[2]})
 __version__ = r'{fullName}'
 """.format(version = version, fullName = versionString + "-" + extra))
 
-from configr import configr, test  # needed for version strings
-print(dir(configr))
+import configr
+import configr.test
 README = "\n".join(["Configr " + versionString] + open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.rst')).read().split("\n")[1:])
 with open("README.rst", "w") as fd: fd.write(README)
 # CHANGES = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CHANGES.rst')).read()
 
 # Ensure unit tests are fine
-testrun = unittest.defaultTestLoader.loadTestsFromModule(test).run(unittest.TestResult())
+testrun = unittest.defaultTestLoader.loadTestsFromModule(configr.test).run(unittest.TestResult())
 assert len(testrun.errors) == 0
 assert len(testrun.failures) == 0
 
@@ -72,7 +72,7 @@ setup(
   license = 'MIT',
   packages = ["configr"],
   package_dir = {"configr": "configr"},
-  package_data = {"": ["../LICENSE"]},
+  package_data = {"": ["../LICENSE", "../README.rst", "../LICENSE"]},
   include_package_data = False,  # if True, will *NOT* package the data!
   zip_safe = False
 )

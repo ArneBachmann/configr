@@ -5,9 +5,8 @@ import os
 import unittest
 import sys
 
-sys.path.insert(0, "../configr")
+sys.path.insert(0, "..")
 import configr
-sys.path.pop(0)
 
 
 
