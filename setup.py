@@ -5,8 +5,6 @@ import time
 import unittest
 from setuptools import setup
 
-# Upload to PyPI by running setup.py clean build_py sdist bdist upload with a correctly set up ~/.pypirc (need HOME variable set correctly on Windows)
-
 if os.path.exists(".git"):
   try:
     p = subprocess.Popen("git describe --always", shell = sys.platform != 'win32', bufsize = 1, stdout = subprocess.PIPE)
@@ -60,7 +58,6 @@ setup(
         Programming Language :: Python :: 2
         Programming Language :: Python :: 2.7
         Programming Language :: Python :: 3
-        Programming Language :: Python :: 3.2
         Programming Language :: Python :: 3.3
         Programming Language :: Python :: 3.4
         Programming Language :: Python :: 3.5
