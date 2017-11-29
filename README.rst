@@ -17,6 +17,8 @@ Configr 2017.2129.2820
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
    :target: https://github.com/ArneBachmann/configr
 
+Works with Python 2.7 and Python 3.3 .. 3.6
+
 
 Synopsis
 --------
@@ -60,10 +62,15 @@ API reference
 
 The Configr object has the following functions::
 
-    __init__(_, name, data = {}, defaults = {})  # Constructor. "data" initializes the configuration, while "defaults" contains fallback values not explicity set on the configuration data.
-    saveSettings(_, keys = None, location = None)  # Persist the configuration. "keys" limits the entries written. "location" is a file system path
-    loadSettings(_, data = {}, location = None, ignores = [])  # load configuration. "data" is used if its key is not found in the file. "ignores" are keys to not load. location" is a file system path
-    keys(_)  # returns list of keys in the configuration object (Python 2) or an dict_keys object (Python 3)
+    __init__(_, name:Optional[str] = None, data:Dict[str,Any] = {}, defaults:Dict[str,Any] = {})  # "data" initializes the configuration, while "defaults" contains fallback values
+
+    loadSettings(_, data:Dict[str,Any] = {}, location:Optional[str] = None, ignores:List[str] = [], clientCodeLocation:Optional[str] = None)  # load configuration. "data" is used for keys not in the file. "ignores" are keys to not load. "location" is a file system path, clientCodeLocation should be a call to os.path.abspath(__file__)
+
+    saveSettings(_, keys:Optional[Dict[str,Any]] = None, location:Optional[str] = None, ignores:List[str] = [], clientCodeLocation:Optional[str] = None)  # save configuration. "keys" limits the entries written. "location" is a file system path, clientCodeLocation should be a call to os.path.abspath(__file__)
+
+    keys(_)  # returns list of keys (Python 2) or an dict_keys object (Python 3)
+    values(_)  # returns list of values (Python 2) or a dict_values object (Python 3)
+    items(_)  # returns a list of (key, value) tuples (Python 2) or a dict_items object (Python 3)
 
 Configr objects support dictionary and attribute style access to get or set entries, as well as the usual means to remove entries via ``del`` and ``remove()``.
 Both "loadSettings" and "saveSettings" support an additional "clientCodeLocation" parameter to allow passing a path to further separated several installation locations of the same app on a single file system. This allows to separate settings for each installation, if they are placed in different directories.
