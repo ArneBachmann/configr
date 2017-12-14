@@ -104,7 +104,8 @@ The tool provides unit tests through the ``doctest`` module and integration test
 Who uses it?
 ------------
 
-The library is currently used by the SOS project, developed by the same author.
+The library is currently used by the `SOS project
+<http://www.python.org/>`_, developed by the author.
 If you use ``configr`` for your Python apps, please let me know.
 
 
