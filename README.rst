@@ -23,8 +23,9 @@ Works with Python 2.7 and Python 3.3 .. 3.6
 Synopsis
 --------
 
-This small utility library helps managing global or per-user configuration for your Python apps.
-Installation through ``pip`` will install the ``appdirs`` package as a dependency, but the code may be used without any external dependencies as well.
+This little utility library helps managing global or per-user configuration for your Python apps and therefore simplifies the common problem of configuration/settings/preset handling.
+
+An installation through the ``pip`` command will also install the ``appdirs`` package as a dependency, but the code can be used without it as well.
 
 
 Code Example
@@ -39,12 +40,6 @@ Simple use::
     Value of A
 
 
-Motivation
-----------
-
-This library helps solving a common problem found in many apps: simplified configuration/settings/preset handling.
-
-
 Installation
 ------------
 
@@ -56,11 +51,17 @@ Using setup.py (usually elevated rights are needed, e.g. via ``sudo`` (Linux) or
 
     python setup.py install
 
+or
+
+    python setup.py install -e .
+
+for a development installation (pointing to the folder you checked the source code out in).
+
 
 API reference
 -------------
 
-The Configr object has the following functions::
+The ``configr.Configr`` object provides the following functions::
 
     __init__(_, name:Optional[str] = None, data:Dict[str,Any] = {}, defaults:Dict[str,Any] = {})  # "data" initializes the configuration, while "defaults" contains fallback values
 
@@ -73,9 +74,9 @@ The Configr object has the following functions::
     items(_)  # returns a list of (key, value) tuples (Python 2) or a dict_items object (Python 3)
 
 Configr objects support dictionary and attribute style access to get or set entries, as well as the usual means to remove entries via ``del`` and ``remove()``.
-Both "loadSettings" and "saveSettings" support an additional "clientCodeLocation" parameter to allow passing a path to further separated several installation locations of the same app on a single file system. This allows to separate settings for each installation, if they are placed in different directories.
+Both "loadSettings" and "saveSettings" support an additional "clientCodeLocation" parameter to allow passing a unique file system path of the caller. This allows to separate settings for multiple installation locations of the same app on a single file system, cf. API comment above.
 
-Both functions also return a named 2-tuple containing last loaded/saved file location in the first (.path), or an exception in the second (.error) position.
+Both functions also return a named 2-tuple ``ReturnValue`` containing last loaded/saved file location in the first (``.path``), or an exception in the second (``.error``) position.
 
 
 Building, packaging and distribution
@@ -91,13 +92,20 @@ Todo
 ----
 
 This library is supposed to be lightweight and gets the job done so far.
-If you have ideas, please put them into the projec's issue tracker on Github.
+If you have ideas or discover bugs, please put them into the project's issue tracker on Github.
 
 
 Tests
 -----
 
-The tool provides unit tests through the doctest module and integration tests through the unittest module.
+The tool provides unit tests through the ``doctest`` module and integration tests through the ``unittest`` module.
+
+
+Who uses it?
+------------
+
+The library is currently used by the SOS project, developed by the same author.
+If you use ``configr`` for your Python apps, please let me know.
 
 
 Contributors
@@ -113,7 +121,7 @@ Licensed under the terms of MIT license.
 
     MIT License
 
-    Copyright (c) 2016-2017 Arne Bachmann
+    Copyright (c) 2016-2018 Arne Bachmann
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
