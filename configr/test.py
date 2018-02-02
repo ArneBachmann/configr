@@ -10,7 +10,7 @@ import configr
 
 
 
-class Test_AppDir(unittest.TestCase):
+class Tests(unittest.TestCase):
   ''' Test suite. '''
 
   def tests_metadata(_):
@@ -74,6 +74,11 @@ class Test_AppDir(unittest.TestCase):
     # Testing map functions: already done in doctest
     # TODO test ignores option for saveSettings
 
+  def testNested(_):
+    c = configr.Configr(data = {"a": "a"}, defaults = configr.Configr(data = {"b": "b"}, defaults = configr.Configr(data = {"c": "c"})))
+    _.assertEqual("a", c.a)
+    _.assertEqual("b", c["b"])
+    _.assertEqual("c", c.c)
 
 def load_tests(loader, tests, ignore):
   ''' The function name suffix "_tests" tells the unittest module about a test case. '''

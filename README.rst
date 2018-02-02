@@ -1,4 +1,4 @@
-Configr 2017.2129.2820
+Configr 2018.1202.3244
 =======
 
 
@@ -17,7 +17,10 @@ Configr 2017.2129.2820
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
    :target: https://github.com/ArneBachmann/configr
 
-Works with Python 2.7 and Python 3.3 .. 3.6
+.. image:: https://bettercodehub.com/edge/badge/ArneBachmann/configr?branch=master
+   :target: https://bettercodehub.com
+
+Works with Python 2.7 and Python 3.3+
 
 
 Synopsis
@@ -77,6 +80,8 @@ Configr objects support dictionary and attribute style access to get or set entr
 Both "loadSettings" and "saveSettings" support an additional "clientCodeLocation" parameter to allow passing a unique file system path of the caller. This allows to separate settings for multiple installation locations of the same app on a single file system, cf. API comment above.
 
 Both functions also return a named 2-tuple ``ReturnValue`` containing last loaded/saved file location in the first (``.path``), or an exception in the second (``.error``) position.
+
+You may also nest Configr objects to have different levels of defaults (e.g. per-system, per-user, per-software, per-instance, ...).
 
 
 Building, packaging and distribution

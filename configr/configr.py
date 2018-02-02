@@ -62,7 +62,7 @@ def determineHomeFolder(name):
         if home["value"] is None: home["value"] = os.expanduser("~")  # recommended cross-platform solution, but could refer to a mapped network drive on Windows
   if home["value"] is None: raise Exception("Cannot reliably determine user's home directory, please file a bug report at https://github.com/ArneBachmann/configr")
   debug("Determined home folder: %s" % home["value"])
-  return home["value"]  # TODO remove this line, as it looks like a function return value
+  return home["value"]  # HINT this return is only for convenience and shouldn't be used by user code
 
 
 class Configr(object):
@@ -93,7 +93,7 @@ class Configr(object):
     '''
     if name is None: name = uuid.uuid4()
     _.__name = name
-    _.__defaults = {str(k): v for k, v in defaults.items()}  # shallow copy by-value
+    _.__defaults = defaults if isinstance(defaults, Configr) else {str(k): v for k, v in defaults.items()}  # shallow copy by-value
     _.__map = {str(k): v for k, v in data.items()}  # create shallow copy
     if home["value"] is None: determineHomeFolder(name)  # determine only once
 
@@ -116,7 +116,7 @@ class Configr(object):
     ''' Query a configuration value via attribute access, e.g. value = obj.name. '''
     key = str(key)
     if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary to remove object name key prefix
-    elif key.startswith("_Test_AppDir"): key = key[len("_Test_AppDir"):]  # for unit testing
+    elif key.startswith("_Tests"): key = key[len("_Tests"):]  # for unit testing
     if key in Configr.internals or key in Configr.exports: return object.__getattribute__(_, key)
     try: return _.__map[key]
     except: return _.__defaults[key]
@@ -125,7 +125,7 @@ class Configr(object):
     ''' Define a configuration value via attribute access, e.g. obj.name = value. '''
     key = str(key)
     if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary
-    elif key.startswith("_Test_AppDir"): key = key[len("_Test_AppDir"):]  # for unit testing
+    elif key.startswith("_Tests"): key = key[len("_Tests"):]  # for unit testing
     if key in Configr.internals: object.__setattr__(_, key, value)
     else: _.__map[key] = value
 
@@ -133,7 +133,7 @@ class Configr(object):
     ''' Remove an configuration entry via attribute access, e.g. del obj.name. '''
     key = str(key)
     if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary
-    elif key.startswith("_Test_AppDir"): key = key[len("_Test_AppDir"):]  # for unit testing
+    elif key.startswith("_Tests"): key = key[len("_Tests"):]  # for unit testing
     if key in Configr.internals or key in Configr.exports: return
     del _.__map[key]  # delegate to dictionary style
 

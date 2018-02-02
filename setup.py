@@ -11,7 +11,7 @@ if os.path.exists(".git"):
     so, se = p.communicate()
     extra = (so.strip() if sys.version_info.major < 3 else so.strip().decode(sys.stdout.encoding)).replace("\n", "-")
     if "\x0d" in extra: extra = extra.split("\x0d")[1]
-    print("Found Git hash %s" % extra)  # TODO use logging module instead
+    print("Found Git hash %s" % extra)
   except: extra = "svn"
 else:
   extra = "svn"
@@ -28,7 +28,6 @@ import configr
 import configr.test
 README = "\n".join(["Configr " + versionString] + open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.rst')).read().split("\n")[1:])
 with open("README.rst", "w") as fd: fd.write(README)
-# CHANGES = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'CHANGES.rst')).read()
 
 # Ensure unit tests are fine
 testrun = unittest.defaultTestLoader.loadTestsFromModule(configr.test).run(unittest.TestResult())
@@ -36,11 +35,14 @@ assert len(testrun.errors) == 0
 assert len(testrun.failures) == 0
 
 # Clean old binaries
-try:
-  for file in (f for f in os.listdir("dist") if any([f.endswith(ext) for ext in (".tar.gz", "zip")])):
-    try: os.unlink(os.path.join("dist", file))
-    except: print("Cannot remove " + file)
-except: pass
+if os.path.exists("dist"):
+  rmFiles = list(sorted(os.listdir("dist")))
+  try:
+    for file in (f for f in (rmFiles if "build" in sys.argv and "sdist" in sys.argv else rmFiles[:-1]) if any([f.endswith(ext) for ext in (".tar.gz", "zip")])):
+      print("Removing old sdist archive %s" % file)
+      try: os.unlink(os.path.join("dist", file))
+      except: print("Cannot remove old distribution file " + file)
+  except: pass
 
 print("Building configr version " + configr.version.__version__)
 setup(
