@@ -15,7 +15,7 @@ install:
   - ps: If(($env:PYTHON).Contains("pypy3")) { python -m pip install --disable-pip-version-check --upgrade "pip<8.0.0" } Else { python -m pip install --disable-pip-version-check --upgrade pip } # downgrade pip, https://github.com/pypa/pip/issues/2669
   - ps: If(($env:PYTHON).Contains("pypy3")) { python -m pip install -U --force-reinstall pip }
   - ps: If(($env:PYTHON).Contains("pypy")) { python -m pip --version } else { pip --version }  # points to CPython, even when running Pypy (because pypy has no \Scripts folder)
-  - cmd: "python -m pip install coverage"
+  - cmd: "python -m pip install coverage python-coveralls"
   - ps: If(($env:PYTHON).Contains("pypy")) { & ($env:PYTHON + '\bin\coverage') 'help' } Else { coverage help }
 clone_script:
   - cmd: git clone https://github.com/ArneBachmann/tagsplorer .\
@@ -47,10 +47,10 @@ environment:
     - PYTHON: "C:\\Miniconda35-x64"
       platform: x64
 build_script:
-  - cmd: python -B setup.py build
+  - cmd: python setup.py build && pip remove appdirs
 # Examples learned from https://social.technet.microsoft.com/wiki/contents/articles/7703.powershell-running-executables.aspx
 test_script:
-  - cmd: cd configr && coverage run tests.py
+  - cmd: coverage run --source=configr configr/test.py && coverage html && coverage annotate configr/test.py
 artifacts:
   - path: htmlcov.zip
     name: Coverage Report

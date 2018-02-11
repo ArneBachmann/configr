@@ -1,9 +1,12 @@
-Configr 2018.1203.1007
-=======
+Configr 2018.1203.1008
+======================
 
 
 .. image:: https://travis-ci.org/ArneBachmann/configr.svg?branch=master
    :target: https://travis-ci.org/ArneBachmann/configr
+
+.. image:: https://ci.appveyor.com/api/projects/status/lyidsj76smdyxd8v?svg=true
+   :target: https://ci.appveyor.com/project/ArneBachmann/configr
 
 .. image:: https://badge.fury.io/py/configr.svg
    :target: https://badge.fury.io/py/configr
@@ -77,11 +80,11 @@ The ``configr.Configr`` object provides the following functions::
     items(_)  # returns a list of (key, value) tuples (Python 2) or a dict_items object (Python 3)
 
 Configr objects support dictionary and attribute style access to get or set entries, as well as the usual means to remove entries via ``del`` and ``remove()``.
-Both "loadSettings" and "saveSettings" support an additional "clientCodeLocation" parameter to allow passing a unique file system path of the caller. This allows to separate settings for multiple installation locations of the same app on a single file system, cf. API comment above.
+Both ``loadSettings`` and ``saveSettings`` support an additional ``clientCodeLocation`` parameter to allow passing a unique file system path from the caller. This allows to separate settings for multiple installation locations of the same app on a single file system, cf. API comment above.
 
 Both functions also return a named 2-tuple ``ReturnValue`` containing last loaded/saved file location in the first (``.path``), or an exception in the second (``.error``) position.
 
-You may also nest Configr objects to have different levels of defaults (e.g. per-system, per-user, per-software, per-instance, ...).
+You may also nest Configr objects to have different levels of defaults (e.g. per-system, per-user, per-software, per-instance, ...), by passing Configr objects instead of the ``defaults`` dictionary.
 
 
 Building, packaging and distribution
@@ -110,7 +113,7 @@ Who uses it?
 ------------
 
 The library is currently used by the `SOS project
-<http://www.python.org/>`_, developed by the author.
+<http://sos-vcs.net/>`_, developed by the author.
 If you use ``configr`` for your Python apps, please let me know.
 
 
