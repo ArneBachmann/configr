@@ -51,7 +51,7 @@ build_script:
 # Examples learned from https://social.technet.microsoft.com/wiki/contents/articles/7703.powershell-running-executables.aspx
 test_script:
   - cmd: coverage run --source=configr configr/test.py
-  - ps:  If(-not(($env:PYTHON).Contains("pypy2"))) { coverage html && coverage annotate configr/test.py }
+  - ps:  If(-not(($env:PYTHON).Contains("pypy"))) { coverage html ; coverage annotate configr/test.py }
 artifacts:
   - path: htmlcov.zip
     name: Coverage Report
