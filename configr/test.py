@@ -79,6 +79,10 @@ class Tests(unittest.TestCase):
     _.assertEqual("a", c.a)
     _.assertEqual("b", c["b"])
     _.assertEqual("c", c.c)
+    _.assertTrue("a" in c)
+    _.assertTrue("b" in c)
+    _.assertTrue("c" in c)
+    _.assertFalse("d" in c)
 
 def load_tests(loader, tests, ignore):
   ''' The function name suffix "_tests" tells the unittest module about a test case. '''

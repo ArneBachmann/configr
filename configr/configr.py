@@ -68,7 +68,7 @@ def determineHomeFolder(name):
 class Configr(object):
   ''' Main configuration object. Property access directly on attributes or dict-style access. '''
 
-  exports = {"loadSettings", "saveSettings", "keys", "values", "items", "__repr__", "__str__"}  # set of function names to accept calling
+  exports = {"loadSettings", "saveSettings", "keys", "values", "items", "__repr__", "__str__", "__contains__"}  # set of function names to accept calling
   internals = {"__class__", "__name", "__map", "__defaults", "__savedTo", "__loadedFrom"}  # app name, dict, fallbacks, hints
 
   def __init__(_, name = None, data = {}, defaults = {}):
@@ -96,6 +96,11 @@ class Configr(object):
     _.__defaults = defaults if isinstance(defaults, Configr) else {str(k): v for k, v in defaults.items()}  # shallow copy by-value
     _.__map = {str(k): v for k, v in data.items()}  # create shallow copy
     if home["value"] is None: determineHomeFolder(name)  # determine only once
+
+  def __contains__(_, key):
+    ''' Recusively checks if a key is defined in any defaults. '''
+    if key in _.__map: return True
+    return key in _.__defaults#: return True
 
   def __getitem__(_, key):
     ''' Query a configuration value via dictionary access, e.g. value = obj[name]. '''
