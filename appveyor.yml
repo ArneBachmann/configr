@@ -46,6 +46,12 @@ environment:
       platform: x86
     - PYTHON: "C:\\Miniconda35-x64"
       platform: x64
+matrix:
+  allow_failures:
+    - PYTHON: "C:\\pypy2"
+      platform: x86
+    - PYTHON: "C:\\pypy3"
+      platform: x86
 build_script:
   - cmd: python setup.py clean build install && python -c "import os, sys; os.system('pip uninstall -y appdirs'); sys.exit(0)"
 # Examples learned from https://social.technet.microsoft.com/wiki/contents/articles/7703.powershell-running-executables.aspx
