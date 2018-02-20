@@ -47,7 +47,7 @@ environment:
     - PYTHON: "C:\\Miniconda35-x64"
       platform: x64
 build_script:
-  - cmd: python setup.py build && pip install -e . && pip uninstall -y appdirs || echo OK
+  - cmd: python setup.py build && pip install -e . && pip uninstall -y appdirs && echo OK
 # Examples learned from https://social.technet.microsoft.com/wiki/contents/articles/7703.powershell-running-executables.aspx
 test_script:
   - cmd: coverage run --source=configr configr/test.py && coverage html && coverage annotate configr/test.py
