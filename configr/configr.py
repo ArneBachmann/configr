@@ -28,11 +28,17 @@ except: import version  # Python 2 logic
 
 _log = logging.getLogger(__name__); debug, info, warn, error = _log.debug, _log.info, _log.warn, _log.error  # logging must be configured in caller app
 
+
+# Constants
 EXTENSION = ".cfg"
 BACKUP = ".bak"
 
+
+# Value type
 ReturnValue = collections.namedtuple("ReturnValue", "path error")  # what load and save returns
 
+
+# Global reference
 home = {"value": None}  # user's home folder
 
 
@@ -172,7 +178,7 @@ class Configr(object):
     except Exception as E:
       debug(str(E))
       _.__loadedFrom = ReturnValue(None, E)  # callers can detect errors by checking this flag
-    debug("Finished loading configuration %r" % config)
+#    debug("Finished loading configuration %r" % config)
     return _.__loadedFrom
 
   def saveSettings(_, keys = None, location = None, ignores = [], clientCodeLocation = None):
@@ -203,7 +209,7 @@ class Configr(object):
     except Exception as E:
       debug(str(E))
       _.__savedTo = ReturnValue(None, E)
-    debug("Finished storing configuration %r" % config)
+#    debug("Finished storing configuration %r" % config)
     return _.__savedTo
 
   def keys(_):
