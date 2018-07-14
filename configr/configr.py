@@ -81,7 +81,7 @@ class Configr(object):
     ''' Create config object for interaction with settings.
         name: file name, usually corresponding with main app name
         data: configuration objects to store initially
-        defaults: a fallback map to use when querying undefined values
+        defaults: a fallback map to use when querying undefined values, but won't be persisted on save
 
     >>> c = Configr("a", data = {1:1, 2:2, "c":"c"}, defaults = {"d": "d"})
     >>> print(c.__name) # test meta access
@@ -158,8 +158,8 @@ class Configr(object):
     ''' Load settings from file system and store on self object.
         data: settings to use only for keys missing in the file
         location: load from a fixed path, e.g. system-wide global settings like app dir
-        ignores: a list of keys to exempt from reading
-        clientCodeLocation: should be a call to os.path.abspath(__file__) from the caller's script to separate configuration for different tool installation locations
+        ignores: a list of keys to exempt from reading (but not from the fallback values in data)
+        clientCodeLocation: should be a call to os.path.abspath(__file__) from the caller's script to distinguish configuration of different tool installation locations
         ignores: list of keys to ignore and not load from file
         returns: ReturnValue 2-tuple(config-file-path or None, None or Exception)
     '''
@@ -169,11 +169,12 @@ class Configr(object):
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation if clientCodeLocation is not None else 'undefined')))).hexdigest()[:4],
         EXTENSION))  # always use current (installed or local) library's location and caller's location to separate configs
     debug("Loading configuration %r" % config)
+    for k, v in data.items(): _[k] = v  # preset data
     try:
       with open(config, "r") as fd:
         loaded = json.loads(fd.read())
-        for k, v in data.items(): _[k] = v  # preset data
-        for k, v in [(K, V) for K, V in loaded.items() if K not in ignores]: _[k] = v
+        for k, v in loaded.items():
+          if k not in ignores: _[k] = v
       _.__loadedFrom = ReturnValue(config, None)  # memorize file location loaded from
     except Exception as E:
       debug(str(E))
