@@ -15,7 +15,7 @@ install:
 #  - ps: If(($env:PYTHON).Contains("pypy3")) { python -m pip install --disable-pip-version-check --upgrade "pip<8.0.0" } Else { python -m pip install --disable-pip-version-check --upgrade pip } # downgrade pip, https://github.com/pypa/pip/issues/2669
 #  - ps: If(($env:PYTHON).Contains("pypy3")) { python -m pip install -U --force-reinstall pip }
   - ps: If(($env:PYTHON).Contains("pypy")) { python -m pip --version } else { pip --version }  # points to CPython, even when running Pypy (because pypy has no \Scripts folder)
-  - ps: If(($env:PYTHON).Contains("Miniconda") { python -m pip install "coverage == 4.0.3" python-coveralls; $error.Clear() } else { python -m pip install --no-warn-script-location "coverage == 4.0.3" python-coveralls' }  # the latter to suppress warning of scripts not on path
+  - ps: If(($env:PYTHON).Contains("Miniconda")) { python -m pip install "coverage == 4.0.3" python-coveralls; $error.Clear() } Else { python -m pip install --no-warn-script-location "coverage == 4.0.3" python-coveralls }  # the latter to suppress warning of scripts not on path
   - ps: If(($env:PYTHON).Contains("pypy")) { & ($env:PYTHON + '\bin\coverage') 'help' } Else { coverage help }
 clone_script:
   - cmd: git clone https://github.com/ArneBachmann/configr .\
