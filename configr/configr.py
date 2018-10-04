@@ -213,23 +213,29 @@ class Configr(object):
 #    debug("Finished storing configuration %r" % config)
     return _.__savedTo
 
-  def keys(_):
+  def keys(_, with_nested = True, with_defaults = False):
     ''' Return configuration's keys.
     >>> from configr import Configr
-    >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"})
-    >>> print(sorted(c.keys()))
+    >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"}, defaults = Configr("Y", data = {3: 3}, defaults = {4: 4}))
+    >>> print(sorted(c.keys(with_nested = False)))
     ['1', '2', 'c']
+    >>> print(sorted(c.keys()))
+    ['1', '2', '3', 'c']
+    >>> print(sorted(c.keys(with_defaults = True)))
+    ['1', '2', '3', '4', 'c']
     '''
-    return _.__map.keys()
+    return (_.__map.keys() if not with_defaults else set.union(set(_.__defaults.keys()), set(_.__map.keys()))) if not (with_nested and isinstance(_.__defaults, Configr)) else set.union(set(_.__defaults.keys(with_nested = with_nested, with_defaults = with_defaults)), set(_.__map.keys()))
 
-  def values(_):
+  def values(_, with_nested = True, with_defaults = False):
     ''' Return configuration's values.
     >>> from configr import Configr
-    >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"})
-    >>> print(sorted([str(v) for v in c.values()]))
+    >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"}, defaults = Configr("Y", data = {3: 3}, defaults = {4: 4}))
+    >>> print(sorted([str(v) for v in c.values(with_nested = False)]))
     ['1', '2', 'c']
+    >>> print(sorted([str(v) for v in c.values(with_defaults = True)]))
+    ['1', '2', '3', '4', 'c']
     '''
-    return _.__map.values()
+    return (_.__map.values() if not with_defaults else set.union(set(_.__defaults.keys()), set(_.__map.values()))) if not (with_nested and isinstance(_.__defaults, Configr)) else set.union(set(_.__defaults.values(with_nested = with_nested, with_defaults = with_defaults)), set(_.__map.values()))
 
   def items(_):
     ''' Return (unsorted) list or dict_items object for all configuration's key-value pairs.
