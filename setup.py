@@ -1,8 +1,4 @@
-import os
-import sys
-import subprocess
-import time
-import unittest
+import os, subprocess, sys, time, unittest
 from setuptools import setup
 
 if os.path.exists(".git"):
@@ -12,9 +8,8 @@ if os.path.exists(".git"):
     extra = (so.strip() if sys.version_info.major < 3 else so.strip().decode(sys.stdout.encoding)).replace("\n", "-")
     if "\x0d" in extra: extra = extra.split("\x0d")[1]
     print("Found Git hash %s" % extra)
-  except: extra = "svn"
-else:
-  extra = "svn"
+  except Exception: extra = "svn"
+else: extra = "svn"
 md = time.localtime()
 version = (md.tm_year, (10 + md.tm_mon) * 100 + md.tm_mday, (10 + md.tm_hour) * 100 + md.tm_min)
 versionString = '.'.join(map(str, version))
@@ -41,8 +36,8 @@ if os.path.exists("dist"):
     for file in (f for f in (rmFiles if "build" in sys.argv and "sdist" in sys.argv else rmFiles[:-1]) if any([f.endswith(ext) for ext in (".tar.gz", "zip")])):
       print("Removing old sdist archive %s" % file)
       try: os.unlink(os.path.join("dist", file))
-      except: print("Cannot remove old distribution file " + file)
-  except: pass
+      except Exception: print("Cannot remove old distribution file " + file)
+  except Exception: pass
 
 print("Building configr version " + configr.version.__version__)
 setup(
@@ -57,13 +52,14 @@ setup(
         Intended Audience :: Developers
         License :: OSI Approved :: MIT License
         Operating System :: OS Independent
-        Programming Language :: Python :: 2
-        Programming Language :: Python :: 2.7
         Programming Language :: Python :: 3
         Programming Language :: Python :: 3.3
         Programming Language :: Python :: 3.4
         Programming Language :: Python :: 3.5
         Programming Language :: Python :: 3.6
+        Programming Language :: Python :: 3.7
+        Programming Language :: Python :: 3.8
+        Programming Language :: Python :: 3.9
         Topic :: Software Development :: Libraries :: Python Modules
         """.split('\n') if c.strip()],  # https://pypi.python.org/pypi?:action=list_classifiers
   keywords = 'application configuration management settings presets',

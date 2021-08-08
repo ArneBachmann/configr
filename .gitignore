@@ -1,0 +1,4 @@
+**/*.pyc
+build/
+configr.egg-info/
+configr/version.py

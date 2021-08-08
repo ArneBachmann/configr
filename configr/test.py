@@ -1,13 +1,7 @@
-import doctest
-import json
-import logging
-import os
-import unittest
-import sys
+import doctest, json, logging, os, unittest, sys
 
 sys.path.insert(0, "..")
 import configr
-
 
 
 class Tests(unittest.TestCase):
@@ -22,15 +16,15 @@ class Tests(unittest.TestCase):
     try:
       for file in (f for f in os.listdir() if f.endswith(configr.EXTENSION + ".bak")):
         try: os.unlink(file)
-        except: pass
-    except: pass
+        except Exception: pass
+    except Exception: pass
     c = configr.Configr("myapp", data = {"d": 2}, defaults = {"e": 1})
     _.assertEqual("myapp", c.__name)
     _.assertEqual("myapp", c["__name"])
     try: c["c"]; raise Exception("Should have crashed")  # not existing data via dictionary access case
-    except: pass
+    except Exception: pass
     try: c.c; raise Exception("Should have crashed")  # not existing data via attribute access case
-    except: pass
+    except Exception: pass
     _.assertEqual(2, c.d)  # pre-defined data case
     _.assertEqual(1, c["e"])  # default case
     # Create some contents
@@ -69,8 +63,8 @@ class Tests(unittest.TestCase):
     _.assertEqual(1, len(c.keys()))
     _.assertIn("c", c.keys())
     # Now stringify
-    _.assertEqual("Configr(c: 33)", str(c))
-    _.assertEqual("Configr(c: 33)", repr(c))
+    _.assertEqual("<Configr c: 33>", str(c))
+    _.assertEqual("<Configr c: 33>", repr(c))
     # Testing map functions: already done in doctest
     # TODO test ignores option for saveSettings
 
