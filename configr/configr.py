@@ -11,19 +11,14 @@ Optional external dependencies:  appdirs (automatically installed when using pip
 Optional standard modules:       pwd, win32com (used on Linux or Windows, respectively)
 '''
 
+import os, sys
+__sut__ = __name__ == '__main__'
+if __sut__: globals()['__name__'] = 'configr.' + os.path.basename(__file__); sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Standard modules
-import collections
-import hashlib
-import json
-import logging
-import os
-import shutil
-import uuid
+import collections, hashlib, json, logging, shutil, uuid
 
 
-try: import configr.version as version  # created and used by setup.py
-except: import version  # Python 2 logic
+from . import version
 
 
 _log = logging.getLogger(__name__); debug, info, warn, error = _log.debug, _log.info, _log.warn, _log.error  # logging must be configured in caller app
@@ -44,6 +39,7 @@ home = {"value": None}  # user's home folder
 
 def bites(s): return s.encode('utf-8')  # name derived from "bytes" which would have been an alternative implementation
 
+
 def determineHomeFolder(name):
   ''' Determine process's user's home directory.
       No need to run on every Configr object creation, as it is assumed to be static throughout one configuration state lifetime.
@@ -55,15 +51,15 @@ def determineHomeFolder(name):
   try:
     import appdirs  # optional dependency which already solves some some problems for us
     home["value"] = appdirs.user_data_dir(name, "configr")  # app/author
-  except:
+  except ImportError:
     try:  # get user home regardless of currently set environment variables
       from win32com.shell import shell, shellcon
       home["value"] = shell.SHGetFolderPath(0, shellcon.CSIDL_PROFILE, None, 0)
-    except:
+    except ImportError:
       try:  # unix-like native solution ignoring environment variables
         from pwd import getpwuid
         home["value"] = getpwuid(os.getuid()).pw_dir
-      except:  # now try standard approaches
+      except ImportError:  # now try standard approaches
         home["value"] = os.getenv("USERPROFILE")  # for windows only
         if home["value"] is None: home["value"] = os.expanduser("~")  # recommended cross-platform solution, but could refer to a mapped network drive on Windows
   if home["value"] is None: raise Exception("Cannot reliably determine user's home directory, please file a bug report at https://github.com/ArneBachmann/configr")
@@ -97,23 +93,18 @@ class Configr(object):
     >>> print(c.d) # same for attribute access
     d
     '''
-    if name is None: name = uuid.uuid4()
+    if name is None: name = str(uuid.uuid4())
     _.__name = name
-    _.__defaults = defaults if isinstance(defaults, Configr) else {str(k): v for k, v in defaults.items()}  # shallow copy by-value
-    _.__map = {str(k): v for k, v in data.items()}  # create shallow copy
+    _.__map = collections.ChainMap({str(k): v for k, v in data.items()}, *(defaults.__map.maps if defaults and isinstance(defaults, Configr) else [{str(k): v for k, v in (defaults.items() if defaults else {})}]))
     if home["value"] is None: determineHomeFolder(name)  # determine only once
 
-  def __contains__(_, key):
-    ''' Recusively checks if a key is defined in any defaults. '''
-    if key in _.__map: return True
-    return key in _.__defaults#: return True
+  def __contains__(_, key): return key in _.__map
 
   def __getitem__(_, key):
     ''' Query a configuration value via dictionary access, e.g. value = obj[name]. '''
     key = str(key)  # always convert keys to strings
     if key in Configr.internals: return getattr(_, key)  # e.g. __map attribute
-    try: return _.__map[key]
-    except: return _.__defaults[key]
+    return _.__map[key]
 
   def __setitem__(_, key, value):
     ''' Define a configuration value via dictionary access, e.g. obj[name] = value. '''
@@ -129,8 +120,7 @@ class Configr(object):
     if key.startswith("_Configr"): key = key[len("_Configr"):]  # strange hack necessary to remove object name key prefix
     elif key.startswith("_Tests"): key = key[len("_Tests"):]  # for unit testing
     if key in Configr.internals or key in Configr.exports: return object.__getattribute__(_, key)
-    try: return _.__map[key]
-    except: return _.__defaults[key]
+    return _.__map[key]  # item access
 
   def __setattr__(_, key, value):
     ''' Define a configuration value via attribute access, e.g. obj.name = value. '''
@@ -148,11 +138,9 @@ class Configr(object):
     if key in Configr.internals or key in Configr.exports: return
     del _.__map[key]  # delegate to dictionary style
 
-  def __repr__(_):
-    return "Configr(%s)" % ", ".join(["%s: %s" % (k, repr(v)) for k, v in _.__map.items()])
+  def __repr__(_): return "<Configr %s>" % ", ".join(["%s: %s" % (k, repr(v)) for k, v in _.__map.items()])
 
-  def __str__(_):
-    return "Configr(%s)" % ", ".join(["%s: %s" % (k, str(v)) for k, v in _.__map.items()])
+  def __str__(_):  return "<Configr %s>" % ", ".join(["%s: %s" % (k, str(v))  for k, v in _.__map.items()])
 
   def loadSettings(_, data = {}, location = None, ignores = [], clientCodeLocation = None):
     ''' Load settings from file system and store on self object.
@@ -176,10 +164,7 @@ class Configr(object):
         for k, v in loaded.items():
           if k not in ignores: _[k] = v
       _.__loadedFrom = ReturnValue(config, None)  # memorize file location loaded from
-    except Exception as E:
-      debug(str(E))
-      _.__loadedFrom = ReturnValue(None, E)  # callers can detect errors by checking this flag
-#    debug("Finished loading configuration %r" % config)
+    except Exception as E: debug(str(E)); _.__loadedFrom = ReturnValue(None, E)  # callers can detect errors by checking this flag
     return _.__loadedFrom
 
   def saveSettings(_, keys = None, location = None, ignores = [], clientCodeLocation = None):
@@ -197,34 +182,32 @@ class Configr(object):
         hashlib.sha1(bites(os.path.dirname(os.path.abspath(clientCodeLocation if clientCodeLocation is not None else 'undefined')))).hexdigest()[:4],  # caller location
         EXTENSION))  # always use current (installed or local) library's location and caller's location to separate configs
     debug("Storing configuration %r" % config)
-    try: os.makedirs(path)
-    except: pass  # already exists
+    try: os.makedirs(path, exist_ok=True)
+    except Exception: pass  # already exists
     try: shutil.copy2(config, config + BACKUP)
-    except: pass
+    except Exception: pass
     try:
       with open(config, "w") as fd:
         toWrite = [K for K in _.__map.keys() if K not in Configr.internals and K not in ignores] if keys is None else keys
         tmp = {k: _[k] for k in toWrite}
         fd.write(json.dumps(tmp))
       _.__savedTo = ReturnValue(config, None)
-    except Exception as E:
-      debug(str(E))
-      _.__savedTo = ReturnValue(None, E)
-#    debug("Finished storing configuration %r" % config)
+    except Exception as E: debug(str(E)); _.__savedTo = ReturnValue(None, E)
     return _.__savedTo
 
   def keys(_, with_nested = True, with_defaults = False):
     ''' Return configuration's keys.
+
     >>> from configr import Configr
     >>> c = Configr("X", data = {1: 1, 2: 2, "c": "c"}, defaults = Configr("Y", data = {3: 3}, defaults = {4: 4}))
     >>> print(sorted(c.keys(with_nested = False)))
     ['1', '2', 'c']
-    >>> print(sorted(c.keys()))
+    >>> print(sorted(c.keys()))  # with nested keys except last default
     ['1', '2', '3', 'c']
     >>> print(sorted(c.keys(with_defaults = True)))
     ['1', '2', '3', '4', 'c']
     '''
-    return (_.__map.keys() if not with_defaults else set.union(set(_.__defaults.keys()), set(_.__map.keys()))) if not (with_nested and isinstance(_.__defaults, Configr)) else set.union(set(_.__defaults.keys(with_nested = with_nested, with_defaults = with_defaults)), set(_.__map.keys()))
+    return _.__map.keys() if with_nested and with_defaults else (_.__map.maps[0].keys() if not with_defaults and not with_nested else (_.__map.parent.keys() if with_defaults else collections.ChainMap(*_.__map.maps[:-1]).keys()))
 
   def values(_, with_nested = True, with_defaults = False):
     ''' Return configuration's values.
@@ -235,7 +218,7 @@ class Configr(object):
     >>> print(sorted([str(v) for v in c.values(with_defaults = True)]))
     ['1', '2', '3', '4', 'c']
     '''
-    return (_.__map.values() if not with_defaults else set.union(set(_.__defaults.keys()), set(_.__map.values()))) if not (with_nested and isinstance(_.__defaults, Configr)) else set.union(set(_.__defaults.values(with_nested = with_nested, with_defaults = with_defaults)), set(_.__map.values()))
+    return _.__map.values() if with_nested and with_defaults else (_.__map.maps[0].values() if not with_defaults and not with_nested else (_.__map.parent.values() if with_defaults else collections.ChainMap(*_.__map.maps[:-1]).values()))
 
   def items(_):
     ''' Return (unsorted) list or dict_items object for all configuration's key-value pairs.
@@ -247,7 +230,4 @@ class Configr(object):
     return _.__map.items()
 
 
-if __name__ == '__main__':
-  ''' Running this library module as a main file will invoke the test suite instead to avoid side-effects. '''
-  import doctest
-  doctest.testmod()
+if __sut__: import doctest; doctest.testmod()

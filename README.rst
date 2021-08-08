@@ -1,4 +1,4 @@
-Configr 2018.1710.2127
+Configr 2018.1714.2858
 ======================
 
 
@@ -28,6 +28,8 @@ Works with Python 2.7 and Python 3.3+
 
 Synopsis
 --------
+
+Since I read on Twitter about [ChainMap](https://realpython.com/python-chainmap/?__s=z37u9wm8b3ghzivlqthg) in the standard library, I was able to re-implement the library very easily.
 
 This little utility library helps managing global or per-user configuration for your Python apps and therefore simplifies the common problem of configuration/settings/preset handling.
 
